@@ -14,10 +14,19 @@ class SalesmanProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> createSalesmanDetails(Salesman salesman) async {
-    salesman = await salesmanRepository.createSalesmanDetails(salesman);
-    notifyListeners();
+  Future<bool> createSalesmanDetails(Salesman salesman) async {
+    try {
+      await salesmanRepository.createSalesmanDetails(salesman);
+      notifyListeners();
+      return true;  // Indicating success
+    } catch (e) {
+      // Handle any error appropriately (e.g., log the error)
+      return false;  // Indicating failure
+    }
   }
+
+
+
 
   Future<void> fetchAllSalesmanDetails() async {
     allSalesmen = await salesmanRepository.getAllSalesmanDetails();

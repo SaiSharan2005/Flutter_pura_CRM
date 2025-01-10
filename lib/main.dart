@@ -4,6 +4,8 @@ import 'package:pura_crm/core/utils/api_client.dart';
 import 'package:pura_crm/features/auth/data/datasources/remote_data_source.dart';
 import 'package:pura_crm/features/auth/data/repositories/salesman_repository_impl.dart';
 import 'package:pura_crm/features/auth/domain/repositories/salesman_repository.dart';
+import 'package:pura_crm/features/auth/presentation/pages/login_page.dart';
+import 'package:pura_crm/features/auth/presentation/pages/register_page.dart';
 import 'package:pura_crm/features/auth/presentation/pages/salesman_page.dart';
 import 'package:pura_crm/features/auth/presentation/state/salesman_provider.dart';
 import 'package:http/http.dart' as http;
@@ -18,14 +20,14 @@ class MyApp extends StatelessWidget {
   late final SalesmanRepository salesmanRepository;
 
   MyApp() {
-    // remoteDataSource = RemoteDataSource(apiClient);
+    remoteDataSource = RemoteDataSource(apiClient); // Initialize here
     salesmanRepository = SalesmanRepositoryImpl(apiClient);
   }
 
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
-      create: (_) => SalesmanProvider(salesmanRepository), // Pass dependency here
+      create: (_) => SalesmanProvider(salesmanRepository),
       child: MaterialApp(
         title: 'Flutter Demo',
         theme: ThemeData(
@@ -34,12 +36,14 @@ class MyApp extends StatelessWidget {
         routes: {
           '/': (context) => HomePage(),
           '/salesman': (context) => SalesmanCreatePage(),
+          '/signup': (context) => RegisterPage(remoteDataSource: remoteDataSource),
+          '/login': (context) => LoginPage(remoteDataSource: remoteDataSource),
         },
-        initialRoute: '/',
       ),
     );
   }
 }
+
 
 // Example HomePage widget
 class HomePage extends StatelessWidget {
@@ -47,7 +51,26 @@ class HomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text('Home Page')),
-      body: Center(child: Text('Welcome to the Home Page!')),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pushNamed(context, '/signup'); // Navigate to Signup page
+              },
+              child: Text('Signup'),
+            ),
+            SizedBox(height: 20), // Add space between the buttons
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pushNamed(context, '/login'); // Navigate to Login page
+              },
+              child: Text('Login'),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

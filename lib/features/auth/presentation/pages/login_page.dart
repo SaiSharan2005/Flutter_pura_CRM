@@ -3,6 +3,7 @@ import 'package:pura_crm/core/utils/secure_storage_helper.dart';
 import 'package:pura_crm/features/auth/data/datasources/remote_data_source.dart';
 import 'package:pura_crm/features/auth/data/models/error_response.dart';
 import 'package:pura_crm/features/auth/data/models/user_details.dart';
+import 'package:pura_crm/features/auth/data/models/user_model.dart';
 import 'package:pura_crm/features/auth/presentation/pages/register_page.dart';
 import 'package:pura_crm/utils/snack_bar_utils.dart';
 

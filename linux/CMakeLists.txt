@@ -7,6 +7,9 @@ project(runner LANGUAGES CXX)
 set(BINARY_NAME "pura_crm")
 # The unique GTK application identifier for this application. See:
 # https://wiki.gnome.org/HowDoI/ChooseApplicationID
+#set(APPLICATION_ID "com.example.pura_crm")
+
+add_definitions(-DAPPLICATION_ID="com.example.pura_crm")
 set(APPLICATION_ID "com.example.pura_crm")
 
 # Explicitly opt in to modern CMake behaviors to avoid warnings with recent
@@ -19,7 +22,7 @@ set(CMAKE_INSTALL_RPATH "$ORIGIN/lib")
 # Root filesystem for cross-building.
 if(FLUTTER_TARGET_PLATFORM_SYSROOT)
   set(CMAKE_SYSROOT ${FLUTTER_TARGET_PLATFORM_SYSROOT})
-  set(CMAKE_FIND_ROOT_PATH ${CMAKE_SYSROOT})
+  set(CMAKE_FIND_ROOT_PATH ${CMAKE_SYSROOT})u
   set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
   set(CMAKE_FIND_ROOT_PATH_MODE_PACKAGE ONLY)
   set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)

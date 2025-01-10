@@ -8,4 +8,6 @@ abstract class SalesmanRepository {
   Future<void> updateSalesmanAboutSelf(Salesman salesman);
   Future<List<Salesman>> getAllSalesmanDetails();
   Future<Salesman> createSalesmanDetails(Salesman salesman);
-  }
+}
+
+

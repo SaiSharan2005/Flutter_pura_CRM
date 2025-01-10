@@ -12,49 +12,49 @@ class SalesmanRepositoryImpl implements SalesmanRepository {
 
   @override
   Future<Salesman> getSalesmanDetailsAboutSelf() async {
-    final response = await apiClient.get('/api/salesman-details/');
-    return SalesmanModel.fromJson(json.decode(response.body));
+    final response = await apiClient.get('/salesman-details/');
+    return Salesman.fromJson(json.decode(response.body));
   }
 
   @override
   Future<Salesman> createSalesmanDetails(Salesman salesman) async {
-    final response = await apiClient.post('/api/salesman-details/create',
-      json.encode(SalesmanModel.fromJson(salesman.toJson())),
+    final response = await apiClient.post('/salesman-details/createSalesman',
+      json.encode(Salesman.fromJson(salesman.toJson())),
     );
-    return SalesmanModel.fromJson(json.decode(response.body));
+    return Salesman.fromJson(json.decode(response.body));
   }
 
   @override
   Future<Salesman> getSalesmanDetailsById(String id) async {
-    final response = await apiClient.get('/api/salesman-details/$id');
-    return SalesmanModel.fromJson(json.decode(response.body));
+    final response = await apiClient.get('/salesman-details/$id');
+    return Salesman.fromJson(json.decode(response.body));
   }
 
   @override
   Future<void> updateSalesmanById(String id, Salesman salesman) async {
     await apiClient.put(
-      '/api/salesman-details/$id',
-      json.encode(SalesmanModel.fromJson(salesman.toJson())),
+      '/salesman-details/$id',
+      json.encode(Salesman.fromJson(salesman.toJson())),
     );
   }
 
   @override
   Future<void> deleteSalesmanById(String id) async {
-    await apiClient.delete('/api/salesman-details/$id');
+    await apiClient.delete('/salesman-details/$id');
   }
 
   @override
   Future<void> updateSalesmanAboutSelf(Salesman salesman) async {
     await apiClient.put(
-      '/api/salesman-details/',
-      json.encode(SalesmanModel.fromJson(salesman.toJson())),
+      '/salesman-details/',
+      json.encode(Salesman.fromJson(salesman.toJson())),
     );
   }
 
   @override
   Future<List<Salesman>> getAllSalesmanDetails() async {
-    final response = await apiClient.get('/api/salesman-details/all');
+    final response = await apiClient.get('/salesman-details/all');
     final List<dynamic> jsonList = json.decode(response.body);
-    return jsonList.map((json) => SalesmanModel.fromJson(json)).toList();
+    return jsonList.map((json) => Salesman.fromJson(json)).toList();
   }
 }

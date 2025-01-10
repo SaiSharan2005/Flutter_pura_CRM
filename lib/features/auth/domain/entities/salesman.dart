@@ -1,4 +1,8 @@
+
+import 'package:pura_crm/features/auth/domain/entities/user.dart';
+
 class Salesman {
+  final User? user; // Nullable
   final String phoneNumber;
   final String address;
   final DateTime dateOfBirth;
@@ -9,6 +13,7 @@ class Salesman {
   final String? notes;
 
   Salesman({
+    this.user,
     required this.phoneNumber,
     required this.address,
     required this.dateOfBirth,
@@ -22,12 +27,13 @@ class Salesman {
   // Factory method to create a Salesman from JSON
   factory Salesman.fromJson(Map<String, dynamic> json) {
     return Salesman(
+      user: json['user'] != null ? User.fromJson(json['user']) : null,
       phoneNumber: json['phoneNumber'],
       address: json['address'],
-      dateOfBirth: json['dateOfBirth'],
+      dateOfBirth: DateTime.parse(json['dateOfBirth']),
       regionAssigned: json['regionAssigned'],
-      totalSales: json['totalSales'],
-      hireDate: json['hireDate'],
+      totalSales: (json['totalSales'] as num).toDouble(), // Ensure double
+      hireDate: DateTime.parse(json['hireDate']),
       status: json['status'],
       notes: json['notes'],
     );
@@ -36,12 +42,13 @@ class Salesman {
   // Method to convert a Salesman instance to JSON
   Map<String, dynamic> toJson() {
     return {
+      'user': user?.toJson(),
       'phoneNumber': phoneNumber,
       'address': address,
-      'dateOfBirth': dateOfBirth,
+      'dateOfBirth': dateOfBirth.toIso8601String(),
       'regionAssigned': regionAssigned,
       'totalSales': totalSales,
-      'hireDate': hireDate,
+      'hireDate': hireDate.toIso8601String(),
       'status': status,
       'notes': notes,
     };
