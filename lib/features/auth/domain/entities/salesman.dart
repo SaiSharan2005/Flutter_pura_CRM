@@ -28,6 +28,7 @@ class Salesman {
   factory Salesman.fromJson(Map<String, dynamic> json) {
     return Salesman(
       user: json['user'] != null ? User.fromJson(json['user']) : null,
+      // user: json['user'] ?? '',
       phoneNumber: json['phoneNumber'],
       address: json['address'],
       dateOfBirth: DateTime.parse(json['dateOfBirth']),

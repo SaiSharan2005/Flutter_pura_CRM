@@ -36,7 +36,7 @@ class MyApp extends StatelessWidget {
         routes: {
           '/': (context) => HomePage(),
           '/salesman': (context) => SalesmanCreatePage(),
-          '/signup': (context) => RegisterPage(remoteDataSource: remoteDataSource),
+          '/signup': (context) => RegistrationPage(remoteDataSource: remoteDataSource),
           '/login': (context) => LoginPage(remoteDataSource: remoteDataSource),
         },
       ),

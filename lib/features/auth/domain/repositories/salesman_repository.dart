@@ -7,7 +7,7 @@ abstract class SalesmanRepository {
   Future<void> deleteSalesmanById(String id);
   Future<void> updateSalesmanAboutSelf(Salesman salesman);
   Future<List<Salesman>> getAllSalesmanDetails();
-  Future<Salesman> createSalesmanDetails(Salesman salesman);
+  Future<bool> createSalesmanDetails(Salesman salesman);
 }
 
 
