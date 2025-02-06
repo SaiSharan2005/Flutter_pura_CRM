@@ -40,7 +40,7 @@ class ApiClient {
     return response;
   }
 
-  Future<http.Response> delete(String endpoint) async {
+  Future<http.Response> delete(String endpoint, {String? body}) async {
     final url = Uri.parse('$baseUrl$endpoint');
     final response = await client.delete(url, headers: await _defaultHeaders());
     _handleResponse(response);
@@ -57,7 +57,7 @@ class ApiClient {
     };
 
     // Add Authorization header if token exists
-    if (token!=null) {
+    if (token != null) {
       headers['Authorization'] = 'Bearer $token';
     }
 

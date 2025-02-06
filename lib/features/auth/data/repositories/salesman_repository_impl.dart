@@ -11,91 +11,96 @@ class SalesmanRepositoryImpl implements SalesmanRepository {
 
   @override
   Future<Salesman> getSalesmanDetailsAboutSelf() async {
-    final response = await apiClient.get('/salesman-details/');
-    return Salesman.fromJson(json.decode(response.body));
+    try {
+      final response = await apiClient.get('/salesman-details/');
+      if (response.statusCode == 200) {
+        return Salesman.fromJson(json.decode(response.body));
+      } else {
+        throw Exception("Failed to fetch salesman details. Status: ${response.statusCode}");
+      }
+    } catch (e) {
+      throw Exception("Error fetching salesman details: $e");
+    }
   }
-
-  // @override
-  // Future<Salesman> createSalesmanDetails(Salesman salesman) async {
-  //   final response = await apiClient.post(
-  //     '/salesman-details/createSalesman',
-  //     json.encode(Salesman.fromJson(salesman.toJson())),
-  //   );
-  //   if (response.statusCode == 200) {
-  //     return Salesman.fromJson(json.decode(response.body));
-  //   } else {
-  //     throw Exception('Failed to create salesman. Status code: ${response.statusCode}');
-  //   }
-  // }
 
   @override
   Future<bool> createSalesmanDetails(Salesman salesman) async {
     try {
       final response = await apiClient.post(
         '/salesman-details/createSalesman',
-        // headers: {'Content-Type': 'application/json'},
-         json.encode(salesman.toJson()),
+        json.encode(salesman.toJson()),
       );
-
-      // Check if the status code indicates success (200 or 201)
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        return true;  // Indicating success
-      } else {
-        // If the response is not successful, log the error and return false
-        print('Error: ${response.statusCode} - ${response.body}');
-        return false;
-      }
+      return response.statusCode == 200 || response.statusCode == 201;
     } catch (e) {
-      // Handle any errors (network, parsing, etc.)
       print("Error creating salesman: $e");
       return false;
     }
   }
 
-
-
-
-@override
+  @override
   Future<Salesman> getSalesmanDetailsById(String id) async {
-    final response = await apiClient.get('/salesman-details/$id');
-    return Salesman.fromJson(json.decode(response.body));
+    try {
+      final response = await apiClient.get('/salesman-details/$id');
+      if (response.statusCode == 200) {
+        return Salesman.fromJson(json.decode(response.body));
+      } else {
+        throw Exception("Failed to fetch salesman by ID. Status: ${response.statusCode}");
+      }
+    } catch (e) {
+      throw Exception("Error fetching salesman by ID: $e");
+    }
   }
 
   @override
-  Future<void> updateSalesmanById(String id, Salesman salesman) async {
+  Future<bool> updateSalesmanById(String id, Salesman salesman) async {
     try {
-      await apiClient.put(
+      final response = await apiClient.put(
         '/salesman-details/$id',
         json.encode(salesman.toJson()),
       );
+      return response.statusCode == 200;
     } catch (e) {
       print("Error updating salesman: $e");
-      throw Exception("Failed to update salesman");
+      return false;
     }
   }
-
 
   @override
   Future<void> deleteSalesmanById(String id) async {
-    final response = await apiClient.delete('/salesman-details/$id');
-    if (response.statusCode != 200) {
-      throw Exception("Failed to delete salesman. Status: ${response.statusCode}");
+    try {
+      final response = await apiClient.delete('/salesman-details/$id');
+      if (response.statusCode != 200) {
+        throw Exception("Failed to delete salesman. Status: ${response.statusCode}");
+      }
+    } catch (e) {
+      throw Exception("Error deleting salesman: $e");
     }
   }
 
-
   @override
   Future<void> updateSalesmanAboutSelf(Salesman salesman) async {
-    await apiClient.put(
-      '/salesman-details/',
-      json.encode(Salesman.fromJson(salesman.toJson())),
-    );
+    try {
+      await apiClient.put(
+        '/salesman-details/',
+        json.encode(salesman.toJson()),
+      );
+    } catch (e) {
+      throw Exception("Error updating self details: $e");
+    }
   }
 
   @override
   Future<List<Salesman>> getAllSalesmanDetails() async {
-    final response = await apiClient.get('/salesman-details/all');
-    final List<dynamic> jsonList = json.decode(response.body);
-    return jsonList.map((json) => Salesman.fromJson(json)).toList();
+    try {
+      final response = await apiClient.get('/salesman-details/all');
+      if (response.statusCode == 200) {
+        final List<dynamic> jsonList = json.decode(response.body);
+        return jsonList.map((json) => Salesman.fromJson(json)).toList();
+      } else {
+        throw Exception("Failed to fetch all salesmen. Status: ${response.statusCode}");
+      }
+    } catch (e) {
+      throw Exception("Error fetching all salesmen: $e");
+    }
   }
 }

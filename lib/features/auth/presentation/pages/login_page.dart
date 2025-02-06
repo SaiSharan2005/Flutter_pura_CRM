@@ -3,6 +3,7 @@ import 'package:flutter/animation.dart';
 import 'package:pura_crm/core/utils/secure_storage_helper.dart';
 import 'package:pura_crm/features/auth/data/datasources/remote_data_source.dart';
 import 'package:pura_crm/features/auth/data/models/error_response.dart';
+import 'package:pura_crm/features/auth/data/models/user_details.dart';
 import 'package:pura_crm/features/auth/presentation/pages/register_page.dart';
 import 'package:pura_crm/utils/snack_bar_utils.dart';
 
@@ -15,7 +16,8 @@ class LoginPage extends StatefulWidget {
   _LoginPageState createState() => _LoginPageState();
 }
 
-class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMixin {
+class _LoginPageState extends State<LoginPage>
+    with SingleTickerProviderStateMixin {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
@@ -75,9 +77,11 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
           _passwordController.text,
         );
         await SecureStorageHelper.saveToken(token);
+        UserDTO user = await widget.remoteDataSource.me();
+        SecureStorageHelper.saveUserData(user);
 
         SnackBarUtils.showSuccessSnackBar(context, 'Login successful!');
-        Navigator.pushNamed(context, '/salesman');
+        Navigator.pushNamed(context, '/salesmanHome');
       } catch (error) {
         setState(() {
           _errorMessage = ErrorResponse(message: error.toString());
@@ -118,7 +122,8 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                     borderRadius: BorderRadius.circular(16),
                   ),
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 32, horizontal: 24),
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 32, horizontal: 24),
                     child: Form(
                       key: _formKey,
                       child: Column(
@@ -149,7 +154,8 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                           TextFormField(
                             controller: _usernameController,
                             decoration: InputDecoration(
-                              prefixIcon: const Icon(Icons.person, color: Color(0xFFE41B47)),
+                              prefixIcon: const Icon(Icons.person,
+                                  color: Color(0xFFE41B47)),
                               labelText: 'Username',
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(12),
@@ -157,15 +163,17 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                               filled: true,
                               fillColor: Colors.grey.shade100,
                             ),
-                            validator: (value) =>
-                            value == null || value.isEmpty ? 'Please enter a username' : null,
+                            validator: (value) => value == null || value.isEmpty
+                                ? 'Please enter a username'
+                                : null,
                           ),
                           const SizedBox(height: 16),
                           TextFormField(
                             controller: _passwordController,
                             obscureText: true,
                             decoration: InputDecoration(
-                              prefixIcon: const Icon(Icons.lock, color: Color(0xFFE41B47)),
+                              prefixIcon: const Icon(Icons.lock,
+                                  color: Color(0xFFE41B47)),
                               labelText: 'Password',
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(12),
@@ -198,7 +206,8 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                                   onPressed: _login,
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: const Color(0xFFE41B47),
-                                    padding: const EdgeInsets.symmetric(vertical: 16),
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 16),
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(12),
                                     ),

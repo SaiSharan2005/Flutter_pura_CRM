@@ -22,7 +22,7 @@ class _RegistrationPageState extends State<RegistrationPage>
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   String _selectedRole = 'SALESMAN'; // Default role
-  final List<String> _roles = ['MANAGER', 'DELIVERY', 'SALESMAN'];
+  final List<String> _roles = ['MANAGER', 'SALESMAN','LOGISTIC'];
 
   late AnimationController _animationController;
   late Animation<Offset> _slideAnimation;
@@ -84,13 +84,21 @@ class _RegistrationPageState extends State<RegistrationPage>
         await SecureStorageHelper.saveToken(token);
         SnackBarUtils.showSuccessSnackBar(context, 'Registration successful!');
 
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (context) =>
-                SalesmanCreatePage(),
-          ),
-        );
+        // Navigate to the specific route based on the selected role
+        String targetRoute;
+        if (_selectedRole == 'SALESMAN') {
+          targetRoute = '/salesman';
+        } else if (_selectedRole == 'MANAGER') {
+          targetRoute = '/manager';
+        // } else if (_selectedRole == 'DELIVERY') {
+        //   targetRoute = '/delivery';
+        } else if (_selectedRole == 'LOGISTIC') {
+          targetRoute = '/logistic';
+        } else {
+          throw Exception('Invalid role selected');
+        }
+
+        Navigator.pushReplacementNamed(context, targetRoute);
       } catch (error) {
         setState(() {
           _errorMessage = ErrorResponse(message: error.toString());
@@ -107,6 +115,49 @@ class _RegistrationPageState extends State<RegistrationPage>
       }
     }
   }
+
+
+  // void _register() async {
+  //   if (_formKey.currentState!.validate()) {
+  //     setState(() {
+  //       _isLoading = true;
+  //       _errorMessage = null;
+  //     });
+  //
+  //     try {
+  //       String token = await widget.remoteDataSource.register(
+  //         _usernameController.text,
+  //         _emailController.text,
+  //         _passwordController.text,
+  //         [_selectedRole],
+  //       );
+  //
+  //       await SecureStorageHelper.saveToken(token);
+  //       SnackBarUtils.showSuccessSnackBar(context, 'Registration successful!');
+  //
+  //       Navigator.pushReplacement(
+  //         context,
+  //         MaterialPageRoute(
+  //           builder: (context) =>
+  //               SalesmanCreatePage(),
+  //         ),
+  //       );
+  //     } catch (error) {
+  //       setState(() {
+  //         _errorMessage = ErrorResponse(message: error.toString());
+  //       });
+  //
+  //       SnackBarUtils.showErrorSnackBar(
+  //         context,
+  //         _errorMessage?.message ?? 'Unknown error occurred',
+  //       );
+  //     } finally {
+  //       setState(() {
+  //         _isLoading = false;
+  //       });
+  //     }
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
