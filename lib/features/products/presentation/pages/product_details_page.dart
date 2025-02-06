@@ -180,7 +180,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
               ),
             ),
             child: const Text(
-              'Add to bag',
+              'Add to cart',
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,

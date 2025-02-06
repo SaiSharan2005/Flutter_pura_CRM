@@ -25,8 +25,7 @@ class _MainLayoutState extends State<MainLayout> {
     if (user != null) {
       setState(() {
         // Assuming user.roles is a list of roles, we're hardcoding as "salesman" for now
-        userRole =
-            "salesman"; // You can modify this based on actual roles from user data
+        userRole = "salesman"; // You can modify this based on actual roles from user data
       });
     }
   }

@@ -95,6 +95,20 @@ class MyApp extends StatelessWidget {
   }
 
   Route<dynamic> _generateRoute(RouteSettings settings) {
+    Uri uri = Uri.parse(settings.name ?? '/');
+
+    if (uri.pathSegments.length == 2 && uri.pathSegments[0] == 'product') {
+      final productId = int.tryParse(uri.pathSegments[1]);
+      if (productId != null) {
+        return MaterialPageRoute(
+          builder: (context) => ProductDetailsPage(
+            productId: productId,
+            getProductByIdUseCase: GetProductByIdUseCase(productRepository),
+          ),
+        );
+      }
+    }
+
     return MaterialPageRoute(
       builder: (context) => MainLayout(
         child: _buildPage(settings.name ?? '/'),
@@ -156,6 +170,11 @@ class HomePage extends StatelessWidget {
             ElevatedButton(
               onPressed: () => Navigator.pushNamed(context, '/product/add'),
               child: Text('Add Product'),
+            ),
+            SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: () => Navigator.pushNamed(context, '/product/10'),
+              child: Text('View Product 10'),
             ),
           ],
         ),
