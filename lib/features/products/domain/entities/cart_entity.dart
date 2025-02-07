@@ -14,6 +14,29 @@ class CartEntity extends Equatable {
     required this.status,
   });
 
+  factory CartEntity.fromJson(Map<String, dynamic> json) {
+    return CartEntity(
+      id: json['id'] ?? 0,
+      userId: json['userId'] ?? 0,
+      items: json['items'] != null
+          ? (json['items'] as List<dynamic>)
+              .map((item) =>
+                  CartItemEntity.fromJson(item as Map<String, dynamic>))
+              .toList()
+          : [],
+      status: json['status'] ?? '',
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'userId': userId,
+      'items': items.map((item) => item.toJson()).toList(),
+      'status': status,
+    };
+  }
+
   @override
   List<Object?> get props => [id, userId, items, status];
 }

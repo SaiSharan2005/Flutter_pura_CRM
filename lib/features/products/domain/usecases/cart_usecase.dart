@@ -37,7 +37,7 @@ class UpdateCartItemUseCase {
 
   UpdateCartItemUseCase(this.repository);
 
-  Future<CartEntity> call(int userId, int cartItemId, int quantity) async {
+  Future<CartItemEntity> call(int userId, int cartItemId, int quantity) async {
     return await repository.updateCartItem(userId, cartItemId, quantity);
   }
 }

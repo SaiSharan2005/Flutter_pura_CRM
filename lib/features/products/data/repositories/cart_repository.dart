@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:pura_crm/core/utils/api_client.dart';
+import 'package:pura_crm/features/products/data/models/cartItem_model.dart';
 import 'package:pura_crm/features/products/data/models/cart_model.dart';
 import 'package:pura_crm/features/products/domain/entities/cart_entity.dart';
 import 'package:pura_crm/features/products/domain/entities/cartItem_entity.dart';
@@ -70,7 +71,7 @@ class CartRepositoryImpl implements CartRepository {
   }
 
   @override
-  Future<CartEntity> updateCartItem(
+  Future<CartItemEntity> updateCartItem(
       int userId, int cartItemId, int quantity) async {
     try {
       final url = '/cart/update/$cartItemId?userId=$userId&quantity=$quantity';
@@ -81,7 +82,7 @@ class CartRepositoryImpl implements CartRepository {
       final response = await apiClient.put(url, body);
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
-        final cartModel = CartModel.fromJson(data);
+        final cartModel = CartItemModel.fromJson(data);
         return cartModel.toEntity();
       } else {
         throw Exception('Failed to update cart item: ${response.statusCode}');

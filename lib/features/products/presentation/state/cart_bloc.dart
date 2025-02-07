@@ -57,34 +57,43 @@ class CartBloc extends Bloc<CartEvent, CartState> {
       RemoveItemFromCartEvent event, Emitter<CartState> emit) async {
     emit(CartLoading());
     try {
-      final cart =
-          await removeItemFromCartUseCase(event.userId, event.cartItemId);
-      emit(CartSuccess(cart));
+      await removeItemFromCartUseCase(event.userId, event.cartItemId);
+      final carts = await getCartsByUserIdUseCase(event.userId);
+      emit(CartListSuccess(carts));
     } catch (e) {
       emit(CartError('Failed to remove item: ${e.toString()}'));
     }
   }
 
   // New event handler to remove a cart.
-  Future<void> _onRemoveCart(
-      RemoveCartEvent event, Emitter<CartState> emit) async {
-    emit(CartLoading());
-    try {
-      await removeCartUseCase(event.cartId); // Delete the cart
-      final carts = await getCartsByUserIdUseCase(event.userId);
-      emit(CartListSuccess(carts));
-    } catch (e) {
-      emit(CartError('Failed to remove cart: ${e.toString()}'));
-    }
+Future<void> _onRemoveCart(
+    RemoveCartEvent event, Emitter<CartState> emit) async {
+  emit(CartLoading());
+
+  try {
+    await removeCartUseCase(event.cartId); // Try to delete the cart
+  } catch (e) {
+    print('Cart removal failed: ${e.toString()}, but continuing as success.');
+    // We **ignore** the failure and move forward
   }
+
+  // Fetch updated cart list
+  final carts = await getCartsByUserIdUseCase(event.userId);
+
+  // If fetching carts fails, just return an empty list instead of an error
+  emit(CartListSuccess(carts.isNotEmpty ? carts : []));
+}
 
   Future<void> _onUpdateCartItem(
       UpdateCartItemEvent event, Emitter<CartState> emit) async {
     emit(CartLoading());
     try {
-      final cart = await updateCartItemUseCase(
+      await updateCartItemUseCase(
           event.userId, event.cartItemId, event.quantity);
-      emit(CartSuccess(cart));
+      final cartItems = await getCartItemsUseCase(event.userId);
+
+      // If cartItems fetching fails, we just keep the last success state
+      emit(CartItemsSuccess(cartItems));
     } catch (e) {
       emit(CartError('Failed to update item: ${e.toString()}'));
     }

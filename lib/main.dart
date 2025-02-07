@@ -15,6 +15,8 @@ import 'package:pura_crm/features/auth/presentation/pages/manager_page.dart';
 import 'package:pura_crm/features/auth/presentation/pages/register_page.dart';
 import 'package:pura_crm/features/auth/presentation/pages/salesman_page.dart';
 import 'package:pura_crm/features/auth/presentation/state/salesman_provider.dart';
+import 'package:pura_crm/features/deals/data/datasource/deal_remote_data_source.dart';
+import 'package:pura_crm/features/deals/presentation/state/deal_bloc.dart';
 import 'package:pura_crm/features/products/data/repositories/cart_repository.dart';
 import 'package:pura_crm/features/products/data/repositories/product_repository_impl.dart';
 import 'package:pura_crm/features/products/domain/repositories/product_repository.dart';
@@ -28,6 +30,16 @@ import 'package:http/http.dart' as http;
 import 'package:pura_crm/features/products/presentation/state/cart_bloc.dart';
 import 'package:pura_crm/features/salesman/presentation/pages/salesman_homepage.dart';
 import 'package:pura_crm/utils/dynamic_navbar.dart';
+
+// import 'package:pura_crm/features/deals/data/datasources/deal_remote_data_source.dart';
+import 'package:pura_crm/features/deals/data/repositories/deal_repository_impl.dart';
+import 'package:pura_crm/features/deals/domain/usecases/create_deal_usecase.dart';
+import 'package:pura_crm/features/deals/domain/usecases/get_all_deals_usecase.dart';
+import 'package:pura_crm/features/deals/domain/usecases/get_deals_of_user_usecase.dart';
+import 'package:pura_crm/features/deals/domain/usecases/update_deal_usecase.dart';
+import 'package:pura_crm/features/deals/domain/usecases/delete_deal_usecase.dart';
+// import 'package:pura_crm/features/deals/presentation/bloc/deal_bloc.dart';
+import 'package:pura_crm/features/deals/presentation/pages/deal_list_page.dart';
 
 void main() {
   runApp(MyApp());
@@ -54,6 +66,13 @@ class MyApp extends StatelessWidget {
   late final GetCartItemsUseCase getCartItemsUseCase;
   late final RemoveCartUseCase removeCartUseCase;
 
+  late final DealRemoteDataSourceImpl dealRemoteDataSource;
+  late final DealRepositoryImpl dealRepository;
+  // late final CreateDealUseCase createDealUseCase;
+  late final GetAllDealsUseCase getAllDealsUseCase;
+  late final GetDealsOfUserUseCase getDealsOfUserUseCase;
+  // late final UpdateDealUseCase updateDealUseCase;
+  late final DeleteDealUseCase deleteDealUseCase;
   @override
   Widget build(BuildContext context) {
     // Initialize all the dependencies
@@ -73,6 +92,14 @@ class MyApp extends StatelessWidget {
     getCartItemsUseCase = GetCartItemsUseCase(cartRepository);
     removeCartUseCase = RemoveCartUseCase(cartRepository);
 
+    dealRemoteDataSource = DealRemoteDataSourceImpl(apiClient: apiClient);
+    dealRepository = DealRepositoryImpl(remoteDataSource: dealRemoteDataSource);
+    // createDealUseCase = CreateDealUseCase(dealRepository);
+    getAllDealsUseCase = GetAllDealsUseCase(dealRepository);
+    getDealsOfUserUseCase = GetDealsOfUserUseCase(dealRepository);
+    // updateDealUseCase = UpdateDealUseCase(dealRepository);
+    deleteDealUseCase = DeleteDealUseCase(dealRepository);
+
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(
@@ -86,6 +113,15 @@ class MyApp extends StatelessWidget {
             getCartsByUserIdUseCase: getCartsByUserIdUseCase,
             getCartItemsUseCase: getCartItemsUseCase,
             removeCartUseCase: removeCartUseCase,
+          ),
+        ),
+        BlocProvider(
+          create: (_) => DealBloc(
+            // createDealUseCase: createDealUseCase,
+            getAllDealsUseCase: getAllDealsUseCase,
+            getDealsOfUserUseCase: getDealsOfUserUseCase,
+            // updateDealUseCase: updateDealUseCase,
+            deleteDealUseCase: deleteDealUseCase,
           ),
         ),
       ],
@@ -142,6 +178,12 @@ class MyApp extends StatelessWidget {
         return UserCartsPage();
       case '/salesmanHome':
         return SalesmanApp();
+      case '/deals':
+        return UserDealsPage(
+          userId: 1,
+          getDealsOfUserUseCase: getDealsOfUserUseCase,
+        ); // Replace with actual user ID logic if available.
+
       default:
         return HomePage();
     }
@@ -180,6 +222,10 @@ class HomePage extends StatelessWidget {
             ElevatedButton(
               onPressed: () => Navigator.pushNamed(context, '/product/10'),
               child: Text('View Product 10'),
+            ),
+            ElevatedButton(
+              onPressed: () => Navigator.pushNamed(context, '/deals'),
+              child: Text('View Deals'),
             ),
           ],
         ),

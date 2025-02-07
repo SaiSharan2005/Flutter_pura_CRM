@@ -192,7 +192,7 @@ class _CartDetailsPageState extends State<CartDetailsPage> {
                                       // Navigate to product detail page.
                                       Navigator.pushNamed(
                                         context,
-                                        '/product/${item.productId}',
+                                        '/product/${item.product.id}',
                                       );
                                     },
                                     child: Image.asset(
@@ -214,11 +214,11 @@ class _CartDetailsPageState extends State<CartDetailsPage> {
                                         onTap: () {
                                           Navigator.pushNamed(
                                             context,
-                                            '/product/${item.productId}',
+                                            '/product/${item.product.id}',
                                           );
                                         },
                                         child: Text(
-                                          item.productName ?? '',
+                                          item.product.productName ?? '',
                                           style: const TextStyle(
                                             fontSize: 18,
                                             fontWeight: FontWeight.bold,
