@@ -8,7 +8,7 @@ class CreateCartUseCase {
   CreateCartUseCase(this.repository);
 
   Future<CartEntity> call(int userId) async {
-    return await repository.createCart(userId);
+    return await repository.createCart();
   }
 }
 
@@ -69,7 +69,6 @@ class RemoveCartUseCase {
   RemoveCartUseCase(this.repository);
 
   Future<void> call(int cartId) async {
-    // return repository.deleteCart(cartId);
-    return;
+    return await repository.deleteCart(cartId);
   }
 }

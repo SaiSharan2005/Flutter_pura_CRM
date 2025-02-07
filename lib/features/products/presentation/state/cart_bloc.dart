@@ -7,9 +7,7 @@ class CartBloc extends Bloc<CartEvent, CartState> {
   final CreateCartUseCase createCartUseCase;
   final AddItemToCartUseCase addItemToCartUseCase;
   final RemoveItemFromCartUseCase removeItemFromCartUseCase;
-  // remove cart funtionality need to uncomment later
-
-  // final RemoveCartUseCase removeCartUseCase; // Added this
+  final RemoveCartUseCase removeCartUseCase; // Added this
   final UpdateCartItemUseCase updateCartItemUseCase;
   final GetCartsByUserIdUseCase getCartsByUserIdUseCase;
   final GetCartItemsUseCase getCartItemsUseCase;
@@ -18,9 +16,7 @@ class CartBloc extends Bloc<CartEvent, CartState> {
     required this.createCartUseCase,
     required this.addItemToCartUseCase,
     required this.removeItemFromCartUseCase,
-    // remove cart funtionality need to uncomment later
-
-    // required this.removeCartUseCase, // Added this
+    required this.removeCartUseCase, // Added here
     required this.updateCartItemUseCase,
     required this.getCartsByUserIdUseCase,
     required this.getCartItemsUseCase,
@@ -28,8 +24,7 @@ class CartBloc extends Bloc<CartEvent, CartState> {
     on<CreateCartEvent>(_onCreateCart);
     on<AddItemToCartEvent>(_onAddItemToCart);
     on<RemoveItemFromCartEvent>(_onRemoveItemFromCart);
-    // remove cart funtionality need to uncomment later
-    // on<RemoveCartEvent>(_onRemoveCart); // Added this
+    on<RemoveCartEvent>(_onRemoveCart); // Added this handler
     on<UpdateCartItemEvent>(_onUpdateCartItem);
     on<GetCartsByUserIdEvent>(_onGetCartsByUserId);
     on<GetCartItemsEvent>(_onGetCartItems);
@@ -51,7 +46,7 @@ class CartBloc extends Bloc<CartEvent, CartState> {
     emit(CartLoading());
     try {
       final cart = await addItemToCartUseCase(
-          event.userId, event.productId, event.quantity);
+          event.cartId, event.productId, event.quantity);
       emit(CartSuccess(cart));
     } catch (e) {
       emit(CartError('Failed to add item: ${e.toString()}'));
@@ -69,19 +64,19 @@ class CartBloc extends Bloc<CartEvent, CartState> {
       emit(CartError('Failed to remove item: ${e.toString()}'));
     }
   }
-// remove cart funtionality need to uncomment later
 
-  // Future<void> _onRemoveCart(
-  //     RemoveCartEvent event, Emitter<CartState> emit) async {
-  //   emit(CartLoading());
-  //   try {
-  //     await removeCartUseCase(event.cartId); // Call use case to delete cart
-  //     final carts = await getCartsByUserIdUseCase(event.userId);
-  //     emit(CartListSuccess(carts));
-  //   } catch (e) {
-  //     emit(CartError('Failed to remove cart: ${e.toString()}'));
-  //   }
-  // }
+  // New event handler to remove a cart.
+  Future<void> _onRemoveCart(
+      RemoveCartEvent event, Emitter<CartState> emit) async {
+    emit(CartLoading());
+    try {
+      await removeCartUseCase(event.cartId); // Delete the cart
+      final carts = await getCartsByUserIdUseCase(event.userId);
+      emit(CartListSuccess(carts));
+    } catch (e) {
+      emit(CartError('Failed to remove cart: ${e.toString()}'));
+    }
+  }
 
   Future<void> _onUpdateCartItem(
       UpdateCartItemEvent event, Emitter<CartState> emit) async {

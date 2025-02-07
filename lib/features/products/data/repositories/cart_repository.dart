@@ -12,10 +12,9 @@ class CartRepositoryImpl implements CartRepository {
   CartRepositoryImpl(this.apiClient);
 
   @override
-  Future<CartEntity> createCart(int userId) async {
+  Future<CartEntity> createCart() async {
     try {
-      final response =
-          await apiClient.post('/cart/create', jsonEncode({'userId': userId}));
+      final response = await apiClient.post('/cart/create', '');
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         final cartModel = CartModel.fromJson(data);
@@ -30,12 +29,12 @@ class CartRepositoryImpl implements CartRepository {
 
   @override
   Future<CartEntity> addItemToCart(
-      int userId, int productId, int quantity) async {
+      int cartId, int productId, int quantity) async {
     try {
       final response = await apiClient.post(
         '/cart/add',
         jsonEncode({
-          'userId': userId,
+          'cartId': cartId,
           'productId': productId,
           'quantity': quantity,
         }),
@@ -55,10 +54,8 @@ class CartRepositoryImpl implements CartRepository {
   @override
   Future<CartEntity> removeItemFromCart(int userId, int cartItemId) async {
     try {
-      final response = await apiClient.delete(
-        '/cart/remove',
-        body: jsonEncode({'userId': userId, 'cartItemId': cartItemId}),
-      );
+      final url = '/cart/remove/$cartItemId?userId=$userId';
+      final response = await apiClient.delete(url);
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         final cartModel = CartModel.fromJson(data);
@@ -76,14 +73,12 @@ class CartRepositoryImpl implements CartRepository {
   Future<CartEntity> updateCartItem(
       int userId, int cartItemId, int quantity) async {
     try {
-      final response = await apiClient.put(
-        '/cart/update',
-        jsonEncode({
-          'userId': userId,
-          'cartItemId': cartItemId,
-          'quantity': quantity,
-        }),
-      );
+      final url = '/cart/update/$cartItemId?userId=$userId&quantity=$quantity';
+      final body = jsonEncode({
+        'userId': userId,
+        'quantity': quantity,
+      });
+      final response = await apiClient.put(url, body);
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         final cartModel = CartModel.fromJson(data);
@@ -128,6 +123,19 @@ class CartRepositoryImpl implements CartRepository {
       }
     } catch (error) {
       throw Exception('Error fetching cart items: $error');
+    }
+  }
+
+  // New method: delete a cart by its cartId.
+  @override
+  Future<void> deleteCart(int cartId) async {
+    try {
+      final response = await apiClient.delete('/cart/$cartId');
+      if (response.statusCode != 200) {
+        throw Exception('Failed to delete cart: ${response.statusCode}');
+      }
+    } catch (error) {
+      throw Exception('Error deleting cart: $error');
     }
   }
 }

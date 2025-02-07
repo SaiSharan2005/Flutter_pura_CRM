@@ -1,14 +1,22 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pura_crm/features/products/domain/entities/product_entity.dart';
+import 'package:pura_crm/features/products/domain/usecases/cart_usecase.dart';
 import 'package:pura_crm/features/products/domain/usecases/product_usecase.dart';
+import 'package:pura_crm/features/products/presentation/state/cart_bloc.dart';
+import 'package:pura_crm/features/products/presentation/state/cart_event.dart';
 
 class ProductDetailsPage extends StatefulWidget {
   final GetProductByIdUseCase getProductByIdUseCase;
+  final GetCartsByUserIdUseCase getCartsByUserIdUseCase; // ADD THIS
+
   final int productId;
 
   const ProductDetailsPage({
     Key? key,
     required this.getProductByIdUseCase,
+    required this.getCartsByUserIdUseCase, // ADD THIS
+
     required this.productId,
   }) : super(key: key);
 
@@ -23,6 +31,81 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
   void initState() {
     super.initState();
     _productFuture = widget.getProductByIdUseCase.call(widget.productId);
+  }
+
+  void _addToLatestCart() async {
+    try {
+      final userId =
+          1; // Assuming userId is 1; replace with actual logic to get user ID.
+
+      // Fetch the latest cart for the user
+      final latestCarts = await widget.getCartsByUserIdUseCase(userId);
+
+      if (latestCarts.isNotEmpty) {
+        final latestCart = latestCarts.last; // Get the most recent cart
+
+        // Assuming quantity is 1; you can modify this to take user input.
+        const quantity = 1;
+
+        // Add the product to the latest cart
+        context
+            .read<CartBloc>()
+            .add(AddItemToCartEvent(latestCart.id, widget.productId, quantity)
+                //   userId: userId,
+                //   productId: widget.productId,
+                //   quantity: quantity,
+                // ),
+                );
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Product added to Cart ID: ${latestCart.id}')),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+              content: Text('No available cart. Please create one first.')),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error adding to cart: $e')),
+      );
+    }
+    void _addToLatestCart() async {
+      try {
+        final userId =
+            1; // Assuming userId is 1; replace with actual logic to get user ID.
+
+        // Fetch the latest cart for the user
+        final latestCarts = await widget.getCartsByUserIdUseCase(userId);
+
+        if (latestCarts.isNotEmpty) {
+          final latestCart = latestCarts.last; // Get the most recent cart
+
+          // Assuming quantity is 1; you can modify this to take user input.
+          const quantity = 1;
+
+          // Add the product to the latest cart
+          context
+              .read<CartBloc>()
+              .add(AddItemToCartEvent(userId, widget.productId, quantity));
+
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+                content: Text('Product added to Cart ID: ${latestCart.id}')),
+          );
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+                content: Text('No available cart. Please create one first.')),
+          );
+        }
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error adding to cart: $e')),
+        );
+      }
+    }
   }
 
   @override
@@ -134,7 +217,6 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
           style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 8),
-        // _buildDetailRow('Color', product.color ?? 'Black'),
         _buildDetailRow('Size', 'One size'),
         _buildDetailRow('Dimensions', product.dimensions ?? 'N/A'),
         _buildDetailRow('Weight', '${product.weight} lbs'),
@@ -172,7 +254,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
       children: [
         Expanded(
           child: ElevatedButton(
-            onPressed: () {},
+            onPressed: _addToLatestCart,
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.black,
               shape: RoundedRectangleBorder(

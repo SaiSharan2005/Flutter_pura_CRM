@@ -52,6 +52,7 @@ class MyApp extends StatelessWidget {
   late final UpdateCartItemUseCase updateCartItemUseCase;
   late final GetCartsByUserIdUseCase getCartsByUserIdUseCase;
   late final GetCartItemsUseCase getCartItemsUseCase;
+  late final RemoveCartUseCase removeCartUseCase;
 
   @override
   Widget build(BuildContext context) {
@@ -70,6 +71,7 @@ class MyApp extends StatelessWidget {
     updateCartItemUseCase = UpdateCartItemUseCase(cartRepository);
     getCartsByUserIdUseCase = GetCartsByUserIdUseCase(cartRepository);
     getCartItemsUseCase = GetCartItemsUseCase(cartRepository);
+    removeCartUseCase = RemoveCartUseCase(cartRepository);
 
     return MultiProvider(
       providers: [
@@ -83,6 +85,7 @@ class MyApp extends StatelessWidget {
             updateCartItemUseCase: updateCartItemUseCase,
             getCartsByUserIdUseCase: getCartsByUserIdUseCase,
             getCartItemsUseCase: getCartItemsUseCase,
+            removeCartUseCase: removeCartUseCase,
           ),
         ),
       ],
@@ -104,6 +107,8 @@ class MyApp extends StatelessWidget {
           builder: (context) => ProductDetailsPage(
             productId: productId,
             getProductByIdUseCase: GetProductByIdUseCase(productRepository),
+            getCartsByUserIdUseCase:
+                GetCartsByUserIdUseCase(cartRepository), // Add this line
           ),
         );
       }
