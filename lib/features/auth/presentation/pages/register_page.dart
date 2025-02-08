@@ -3,13 +3,13 @@ import 'package:pura_crm/core/utils/secure_storage_helper.dart';
 import 'package:pura_crm/features/auth/data/datasources/remote_data_source.dart';
 import 'package:pura_crm/features/auth/data/models/error_response.dart';
 import 'package:pura_crm/features/auth/presentation/pages/login_page.dart';
-import 'package:pura_crm/features/auth/presentation/pages/salesman_page.dart';
 import 'package:pura_crm/utils/snack_bar_utils.dart';
 
 class RegistrationPage extends StatefulWidget {
   final RemoteDataSource remoteDataSource;
 
-  const RegistrationPage({Key? key, required this.remoteDataSource}) : super(key: key);
+  const RegistrationPage({Key? key, required this.remoteDataSource})
+      : super(key: key);
 
   @override
   _RegistrationPageState createState() => _RegistrationPageState();
@@ -22,7 +22,7 @@ class _RegistrationPageState extends State<RegistrationPage>
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   String _selectedRole = 'SALESMAN'; // Default role
-  final List<String> _roles = ['MANAGER', 'SALESMAN','LOGISTIC'];
+  final List<String> _roles = ['MANAGER', 'SALESMAN', 'LOGISTIC'];
 
   late AnimationController _animationController;
   late Animation<Offset> _slideAnimation;
@@ -90,8 +90,8 @@ class _RegistrationPageState extends State<RegistrationPage>
           targetRoute = '/salesman';
         } else if (_selectedRole == 'MANAGER') {
           targetRoute = '/manager';
-        // } else if (_selectedRole == 'DELIVERY') {
-        //   targetRoute = '/delivery';
+          // } else if (_selectedRole == 'DELIVERY') {
+          //   targetRoute = '/delivery';
         } else if (_selectedRole == 'LOGISTIC') {
           targetRoute = '/logistic';
         } else {
@@ -115,7 +115,6 @@ class _RegistrationPageState extends State<RegistrationPage>
       }
     }
   }
-
 
   // void _register() async {
   //   if (_formKey.currentState!.validate()) {
@@ -182,7 +181,8 @@ class _RegistrationPageState extends State<RegistrationPage>
                     borderRadius: BorderRadius.circular(16),
                   ),
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 32, horizontal: 24),
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 32, horizontal: 24),
                     child: Form(
                       key: _formKey,
                       child: Column(
@@ -213,8 +213,8 @@ class _RegistrationPageState extends State<RegistrationPage>
                           TextFormField(
                             controller: _usernameController,
                             decoration: InputDecoration(
-                              prefixIcon:
-                              const Icon(Icons.person, color: Color(0xFFE41B47)),
+                              prefixIcon: const Icon(Icons.person,
+                                  color: Color(0xFFE41B47)),
                               labelText: 'Username',
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(12),
@@ -222,8 +222,7 @@ class _RegistrationPageState extends State<RegistrationPage>
                               filled: true,
                               fillColor: Colors.grey.shade100,
                             ),
-                            validator: (value) =>
-                            value == null || value.isEmpty
+                            validator: (value) => value == null || value.isEmpty
                                 ? 'Please enter a username'
                                 : null,
                           ),
@@ -231,8 +230,8 @@ class _RegistrationPageState extends State<RegistrationPage>
                           TextFormField(
                             controller: _emailController,
                             decoration: InputDecoration(
-                              prefixIcon:
-                              const Icon(Icons.email, color: Color(0xFFE41B47)),
+                              prefixIcon: const Icon(Icons.email,
+                                  color: Color(0xFFE41B47)),
                               labelText: 'Email',
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(12),
@@ -255,8 +254,8 @@ class _RegistrationPageState extends State<RegistrationPage>
                             controller: _passwordController,
                             obscureText: true,
                             decoration: InputDecoration(
-                              prefixIcon:
-                              const Icon(Icons.lock, color: Color(0xFFE41B47)),
+                              prefixIcon: const Icon(Icons.lock,
+                                  color: Color(0xFFE41B47)),
                               labelText: 'Password',
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(12),
@@ -286,9 +285,9 @@ class _RegistrationPageState extends State<RegistrationPage>
                             ),
                             items: _roles
                                 .map((role) => DropdownMenuItem(
-                              value: role,
-                              child: Text(role),
-                            ))
+                                      value: role,
+                                      child: Text(role),
+                                    ))
                                 .toList(),
                             onChanged: (value) {
                               setState(() {
@@ -304,7 +303,8 @@ class _RegistrationPageState extends State<RegistrationPage>
                               onPressed: _register,
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: const Color(0xFFE41B47),
-                                padding: const EdgeInsets.symmetric(vertical: 16),
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 16),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(12),
                                 ),
@@ -322,7 +322,8 @@ class _RegistrationPageState extends State<RegistrationPage>
                                   context,
                                   MaterialPageRoute(
                                     builder: (context) => LoginPage(
-                                        remoteDataSource: widget.remoteDataSource),
+                                        remoteDataSource:
+                                            widget.remoteDataSource),
                                   ),
                                 );
                               },

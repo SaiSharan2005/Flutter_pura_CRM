@@ -25,7 +25,8 @@ class _MainLayoutState extends State<MainLayout> {
     if (user != null) {
       setState(() {
         // Assuming user.roles is a list of roles, we're hardcoding as "salesman" for now
-        userRole = "salesman"; // You can modify this based on actual roles from user data
+        userRole =
+            "salesman"; // You can modify this based on actual roles from user data
       });
     }
   }
@@ -39,7 +40,7 @@ class _MainLayoutState extends State<MainLayout> {
     // Define routes per role
     final routes = {
       'admin': ['/dashboard', '/users', '/reports'],
-      'salesman': ['/products', '/cart', '/orders'],
+      'salesman': ['/products', '/deals', '/profile'],
       'customer': ['/home', '/orders', '/profile'],
       'supplier': ['/inventory', '/orders', '/profile'],
     };
@@ -72,9 +73,8 @@ class _MainLayoutState extends State<MainLayout> {
           BottomNavigationBarItem(
               icon: Icon(Icons.shopping_bag), label: 'Products'),
           BottomNavigationBarItem(
-              icon: Icon(Icons.shopping_cart), label: 'Cart'),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.receipt_long), label: 'Orders'),
+              icon: Icon(Icons.local_offer), label: 'Deals'),
+          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
         ];
         break;
       case 'customer':
@@ -116,7 +116,7 @@ class _MainLayoutState extends State<MainLayout> {
         currentIndex: _selectedIndex,
         onTap: _onItemTapped,
         items: navItems,
-        selectedItemColor: Colors.blue,
+        selectedItemColor: Color(0xFFE41B47), // Set primary color
         unselectedItemColor: Colors.grey,
       ),
     );

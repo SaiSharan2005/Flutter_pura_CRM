@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:pura_crm/features/auth/domain/repositories/salesman_repository.dart';
-import 'package:pura_crm/features/auth/domain/entities/salesman.dart';
+import 'package:pura_crm/features/salesman/domain/repositories/salesman_repository.dart';
+import 'package:pura_crm/features/salesman/domain/entities/salesman.dart';
 
 class SalesmanProvider with ChangeNotifier {
   final SalesmanRepository salesmanRepository;
@@ -35,18 +35,13 @@ class SalesmanProvider with ChangeNotifier {
         // Notifying listeners if successful
         notifyListeners();
       }
-      return isSuccess;  // Return success/failure status
+      return isSuccess; // Return success/failure status
     } catch (e) {
       // Handle any errors here
       print("Error in provider: $e");
-      return false;  // Return failure
+      return false; // Return failure
     }
   }
-
-
-
-
-
 
   Future<void> fetchAllSalesmanDetails() async {
     final details = await salesmanRepository.getAllSalesmanDetails();
@@ -57,7 +52,6 @@ class SalesmanProvider with ChangeNotifier {
     }
     notifyListeners();
   }
-
 
   Future<void> updateSalesmanDetails(Salesman updatedSalesman) async {
     await salesmanRepository.updateSalesmanAboutSelf(updatedSalesman);

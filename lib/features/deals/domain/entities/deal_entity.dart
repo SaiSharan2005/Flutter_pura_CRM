@@ -56,4 +56,8 @@ class DealEntity {
       note: json['note'] ?? '',
     );
   }
+  @override
+  String toString() {
+    return 'DealEntity(id: $id, dealName: $dealName, dealStage: $dealStage, amount: $amount, quantity: $quantity, deliveryAddress: $deliveryAddress, expectedCloseDate: $expectedCloseDate, actualClosedDate: $actualClosedDate, note: $note, customer: $customerId, cart: $cartId, user: $userId)';
+  }
 }

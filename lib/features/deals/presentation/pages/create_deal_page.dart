@@ -89,7 +89,7 @@
 //                 onPressed: () {
 //                   if (_formKey.currentState!.validate()) {
 //                     final deal = DealEntity(
-//                       customerId: customerId,
+//                       customerId: customerId.id,
 //                       cartId: cartId,
 //                       userId: widget.userId,
 //                       dealName: _dealNameController.text,

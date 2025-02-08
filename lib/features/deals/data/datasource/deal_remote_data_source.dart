@@ -52,7 +52,8 @@ class DealRemoteDataSourceImpl implements DealRemoteDataSource {
     final response = await apiClient.get('/deals/');
     if (response.statusCode == 200) {
       final List<dynamic> decoded =
-          jsonDecode(response.body); // responseBody is your JSON string
+          await jsonDecode(response.body); // responseBody is your JSON string
+      print(decoded);
       final List<DealModel> deals = decoded.map<DealModel>((dynamic dealJson) {
         try {
           final Map<String, dynamic> dealMap = dealJson as Map<String, dynamic>;
@@ -63,6 +64,8 @@ class DealRemoteDataSourceImpl implements DealRemoteDataSource {
           rethrow;
         }
       }).toList();
+      print(deals.toString());
+
       return deals;
     } else {
       throw Exception('Failed to get deals for user');

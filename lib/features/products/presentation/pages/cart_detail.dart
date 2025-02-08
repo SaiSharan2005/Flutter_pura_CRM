@@ -69,9 +69,7 @@ class _CartDetailsPageState extends State<CartDetailsPage> {
     // Dispatch removal events for all items that were removed.
     for (var removedId in removedItemIds) {
       hasChange = true;
-      bloc.add(
-        RemoveItemFromCartEvent(widget.cart.userId, removedId),
-      );
+      bloc.add(RemoveItemFromCartEvent(widget.cart.userId, removedId));
     }
 
     // Dispatch update events for items that remain but with a modified quantity.
@@ -80,13 +78,11 @@ class _CartDetailsPageState extends State<CartDetailsPage> {
       final originalQuantity = originalQuantities[i];
       if ((modifiedItem.quantity ?? 0) != originalQuantity) {
         hasChange = true;
-        bloc.add(
-          UpdateCartItemEvent(
-            widget.cart.userId,
-            modifiedItem.id,
-            modifiedItem.quantity ?? 0,
-          ),
-        );
+        bloc.add(UpdateCartItemEvent(
+          widget.cart.userId,
+          modifiedItem.id,
+          modifiedItem.quantity ?? 0,
+        ));
       }
     }
 
@@ -95,7 +91,12 @@ class _CartDetailsPageState extends State<CartDetailsPage> {
         const SnackBar(content: Text('No changes detected')),
       );
     } else {
-      Navigator.pop(context);
+      // If the cart is empty after removal, redirect to the cart page.
+      if (localCartItems.isEmpty) {
+        Navigator.pushNamedAndRemoveUntil(context, '/cart', (route) => false);
+      } else {
+        Navigator.pop(context);
+      }
     }
   }
 

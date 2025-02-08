@@ -1,4 +1,4 @@
-import 'package:pura_crm/features/auth/domain/entities/salesman.dart';
+import 'package:pura_crm/features/salesman/domain/entities/salesman.dart';
 
 abstract class SalesmanRepository {
   Future<Salesman> getSalesmanDetailsAboutSelf();
@@ -9,5 +9,3 @@ abstract class SalesmanRepository {
   Future<List<Salesman>> getAllSalesmanDetails();
   Future<bool> createSalesmanDetails(Salesman salesman);
 }
-
-

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:pura_crm/features/auth/domain/entities/salesman.dart';
+import 'package:pura_crm/features/salesman/domain/entities/salesman.dart';
 import 'package:pura_crm/features/auth/presentation/state/salesman_provider.dart';
 import 'package:pura_crm/utils/snack_bar_utils.dart';
 
@@ -13,7 +13,8 @@ class _SalesmanCreatePageState extends State<SalesmanCreatePage> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _addressController = TextEditingController();
-  final TextEditingController _regionAssignedController = TextEditingController();
+  final TextEditingController _regionAssignedController =
+      TextEditingController();
   final TextEditingController _totalSalesController = TextEditingController();
   final TextEditingController _notesController = TextEditingController();
 
@@ -94,33 +95,42 @@ class _SalesmanCreatePageState extends State<SalesmanCreatePage> {
                               controller: _phoneController,
                               decoration: const InputDecoration(
                                 labelText: 'Phone',
-                                prefixIcon: Icon(Icons.phone, color: Colors.red),  // Red color
+                                prefixIcon: Icon(Icons.phone,
+                                    color: Colors.red), // Red color
                                 border: OutlineInputBorder(),
                               ),
                               validator: (value) =>
-                              value == null || value.isEmpty ? 'Please enter the phone number' : null,
+                                  value == null || value.isEmpty
+                                      ? 'Please enter the phone number'
+                                      : null,
                             ),
                             const SizedBox(height: 16),
                             TextFormField(
                               controller: _addressController,
                               decoration: const InputDecoration(
                                 labelText: 'Address',
-                                prefixIcon: Icon(Icons.location_on, color: Colors.red),  // Red color
+                                prefixIcon: Icon(Icons.location_on,
+                                    color: Colors.red), // Red color
                                 border: OutlineInputBorder(),
                               ),
                               validator: (value) =>
-                              value == null || value.isEmpty ? 'Please enter the address' : null,
+                                  value == null || value.isEmpty
+                                      ? 'Please enter the address'
+                                      : null,
                             ),
                             const SizedBox(height: 16),
                             TextFormField(
                               controller: _regionAssignedController,
                               decoration: const InputDecoration(
                                 labelText: 'Region Assigned',
-                                prefixIcon: Icon(Icons.map, color: Colors.red),  // Red color
+                                prefixIcon: Icon(Icons.map,
+                                    color: Colors.red), // Red color
                                 border: OutlineInputBorder(),
                               ),
                               validator: (value) =>
-                              value == null || value.isEmpty ? 'Please enter the region assigned' : null,
+                                  value == null || value.isEmpty
+                                      ? 'Please enter the region assigned'
+                                      : null,
                             ),
                             const SizedBox(height: 16),
                             TextFormField(
@@ -128,37 +138,44 @@ class _SalesmanCreatePageState extends State<SalesmanCreatePage> {
                               keyboardType: TextInputType.number,
                               decoration: const InputDecoration(
                                 labelText: 'Total Sales',
-                                prefixIcon: Icon(Icons.bar_chart, color: Colors.red),  // Red color
+                                prefixIcon: Icon(Icons.bar_chart,
+                                    color: Colors.red), // Red color
                                 border: OutlineInputBorder(),
                               ),
                               validator: (value) =>
-                              value == null || value.isEmpty ? 'Please enter the total sales' : null,
+                                  value == null || value.isEmpty
+                                      ? 'Please enter the total sales'
+                                      : null,
                             ),
                             const SizedBox(height: 16),
                             DropdownButtonFormField<String>(
                               value: _status,
                               items: _statusOptions
                                   .map((status) => DropdownMenuItem<String>(
-                                value: status,
-                                child: Text(status),
-                              ))
+                                        value: status,
+                                        child: Text(status),
+                                      ))
                                   .toList(),
                               onChanged: (value) => setState(() {
                                 _status = value!;
                               }),
                               decoration: const InputDecoration(
                                 labelText: 'Status',
-                                prefixIcon: Icon(Icons.flag, color: Colors.red),  // Red color
+                                prefixIcon: Icon(Icons.flag,
+                                    color: Colors.red), // Red color
                                 border: OutlineInputBorder(),
                               ),
-                              validator: (value) => value == null ? 'Please select a status' : null,
+                              validator: (value) => value == null
+                                  ? 'Please select a status'
+                                  : null,
                             ),
                             const SizedBox(height: 16),
                             TextFormField(
                               controller: _notesController,
                               decoration: const InputDecoration(
                                 labelText: 'Notes',
-                                prefixIcon: Icon(Icons.note, color: Colors.red),  // Red color
+                                prefixIcon: Icon(Icons.note,
+                                    color: Colors.red), // Red color
                                 border: OutlineInputBorder(),
                               ),
                               maxLines: 3,
@@ -173,8 +190,12 @@ class _SalesmanCreatePageState extends State<SalesmanCreatePage> {
                                   child: Text(
                                     _dateOfBirth == null
                                         ? 'Select Date'
-                                        : _dateOfBirth!.toLocal().toString().split(' ')[0],
-                                    style: const TextStyle(color: Color(0xFFE41B47)),
+                                        : _dateOfBirth!
+                                            .toLocal()
+                                            .toString()
+                                            .split(' ')[0],
+                                    style: const TextStyle(
+                                        color: Color(0xFFE41B47)),
                                   ),
                                 ),
                               ],
@@ -187,45 +208,54 @@ class _SalesmanCreatePageState extends State<SalesmanCreatePage> {
                                     phoneNumber: _phoneController.text,
                                     address: _addressController.text,
                                     dateOfBirth: _dateOfBirth ?? DateTime.now(),
-                                    regionAssigned: _regionAssignedController.text,
-                                    totalSales: double.tryParse(_totalSalesController.text) ?? 0.0,
+                                    regionAssigned:
+                                        _regionAssignedController.text,
+                                    totalSales: double.tryParse(
+                                            _totalSalesController.text) ??
+                                        0.0,
                                     hireDate: _hireDate,
                                     status: _status,
-                                    notes: _notesController.text.isNotEmpty ? _notesController.text : null,
+                                    notes: _notesController.text.isNotEmpty
+                                        ? _notesController.text
+                                        : null,
                                   );
 
                                   try {
-                                    final bool isSuccess = await Provider.of<SalesmanProvider>(context, listen: false)
-                                        .createSalesmanDetails(newSalesman);
+                                    final bool isSuccess =
+                                        await Provider.of<SalesmanProvider>(
+                                                context,
+                                                listen: false)
+                                            .createSalesmanDetails(newSalesman);
 
                                     if (isSuccess) {
                                       SnackBarUtils.showSuccessSnackBar(
                                         context,
                                         'Salesman created successfully',
                                       );
-                                      Navigator.pop(context);  // Navigate back to the previous screen
+                                      Navigator.pop(
+                                          context); // Navigate back to the previous screen
                                     } else {
                                       SnackBarUtils.showErrorSnackBar(
                                         context,
                                         'Failed to create Salesman. Please try again.',
                                       );
                                     }
-
-
                                   } catch (error) {
                                     ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(content: Text('Error: ${error.toString()}')),
+                                      SnackBar(
+                                          content: Text(
+                                              'Error: ${error.toString()}')),
                                     );
                                   }
                                 }
-                              }
-                              ,
+                              },
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: const Color(0xFFE41B47),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(12),
                                 ),
-                                padding: const EdgeInsets.symmetric(vertical: 16),
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 16),
                               ),
                               child: const Text('Create Salesman'),
                             ),

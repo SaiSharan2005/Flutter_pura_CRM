@@ -9,6 +9,6 @@ abstract class DealRepository {
   Future<DealEntity> createDeal(DealRequestDto deal);
   Future<List<DealEntity>> getAllDeals();
   Future<List<DealEntity>> getDealsOfUser(int userId);
-  // Future<DealEntity> updateDeal(int id, DealEntity deal);
+  Future<DealEntity> updateDeal(int id, DealEntity deal);
   Future<void> deleteDeal(int id);
 }

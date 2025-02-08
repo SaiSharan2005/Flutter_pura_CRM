@@ -66,23 +66,23 @@ class CartBloc extends Bloc<CartEvent, CartState> {
   }
 
   // New event handler to remove a cart.
-Future<void> _onRemoveCart(
-    RemoveCartEvent event, Emitter<CartState> emit) async {
-  emit(CartLoading());
+  Future<void> _onRemoveCart(
+      RemoveCartEvent event, Emitter<CartState> emit) async {
+    emit(CartLoading());
 
-  try {
-    await removeCartUseCase(event.cartId); // Try to delete the cart
-  } catch (e) {
-    print('Cart removal failed: ${e.toString()}, but continuing as success.');
-    // We **ignore** the failure and move forward
+    try {
+      await removeCartUseCase(event.cartId); // Try to delete the cart
+    } catch (e) {
+      print('Cart removal failed: ${e.toString()}, but continuing as success.');
+      // We **ignore** the failure and move forward
+    }
+
+    // Fetch updated cart list
+    final carts = await getCartsByUserIdUseCase(event.userId);
+
+    // If fetching carts fails, just return an empty list instead of an error
+    emit(CartListSuccess(carts.isNotEmpty ? carts : []));
   }
-
-  // Fetch updated cart list
-  final carts = await getCartsByUserIdUseCase(event.userId);
-
-  // If fetching carts fails, just return an empty list instead of an error
-  emit(CartListSuccess(carts.isNotEmpty ? carts : []));
-}
 
   Future<void> _onUpdateCartItem(
       UpdateCartItemEvent event, Emitter<CartState> emit) async {
@@ -90,10 +90,11 @@ Future<void> _onRemoveCart(
     try {
       await updateCartItemUseCase(
           event.userId, event.cartItemId, event.quantity);
-      final cartItems = await getCartItemsUseCase(event.userId);
+      // final cartItems = await getCartItemsUseCase(event.userId);
 
       // If cartItems fetching fails, we just keep the last success state
-      emit(CartItemsSuccess(cartItems));
+      final carts = await getCartsByUserIdUseCase(event.userId);
+      emit(CartListSuccess(carts));
     } catch (e) {
       emit(CartError('Failed to update item: ${e.toString()}'));
     }

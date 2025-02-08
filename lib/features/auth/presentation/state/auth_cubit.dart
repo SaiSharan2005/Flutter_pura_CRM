@@ -19,10 +19,12 @@ class AuthCubit extends Cubit<AuthState> {
     }
   }
 
-  Future<void> register(String username, String email, String password, List<String> roles) async {
+  Future<void> register(String username, String email, String password,
+      List<String> roles) async {
     emit(AuthState.loading());
     try {
-      final token = await registerUseCase.execute(username, email, password, roles);
+      final token =
+          await registerUseCase.execute(username, email, password, roles);
       emit(AuthState.success(token));
     } catch (e) {
       emit(AuthState.error(e.toString()));

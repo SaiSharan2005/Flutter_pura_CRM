@@ -5,18 +5,19 @@ import 'package:pura_crm/core/utils/api_client.dart';
 import 'package:pura_crm/features/auth/data/datasources/remote_data_source.dart';
 import 'package:pura_crm/features/auth/data/repositories/logistic_person_repository.dart';
 import 'package:pura_crm/features/auth/data/repositories/manager_repository_impl.dart';
-import 'package:pura_crm/features/auth/data/repositories/salesman_repository_impl.dart';
+import 'package:pura_crm/features/auth/presentation/pages/salesman_page.dart';
+import 'package:pura_crm/features/salesman/data/repositories/salesman_repository_impl.dart';
 import 'package:pura_crm/features/auth/domain/repositories/logistic_repository.dart';
 import 'package:pura_crm/features/auth/domain/repositories/manager_repository.dart';
-import 'package:pura_crm/features/auth/domain/repositories/salesman_repository.dart';
+import 'package:pura_crm/features/salesman/domain/repositories/salesman_repository.dart';
 import 'package:pura_crm/features/auth/presentation/pages/login_page.dart';
 import 'package:pura_crm/features/auth/presentation/pages/logistic_person_page.dart';
 import 'package:pura_crm/features/auth/presentation/pages/manager_page.dart';
 import 'package:pura_crm/features/auth/presentation/pages/register_page.dart';
-import 'package:pura_crm/features/auth/presentation/pages/salesman_page.dart';
 import 'package:pura_crm/features/auth/presentation/state/salesman_provider.dart';
 import 'package:pura_crm/features/deals/data/datasource/deal_remote_data_source.dart';
 import 'package:pura_crm/features/deals/presentation/state/deal_bloc.dart';
+import 'package:pura_crm/features/maps/presentation/pages/map_screen.dart';
 import 'package:pura_crm/features/products/data/repositories/cart_repository.dart';
 import 'package:pura_crm/features/products/data/repositories/product_repository_impl.dart';
 import 'package:pura_crm/features/products/domain/repositories/product_repository.dart';
@@ -29,6 +30,7 @@ import 'package:pura_crm/features/products/presentation/pages/product_details_pa
 import 'package:http/http.dart' as http;
 import 'package:pura_crm/features/products/presentation/state/cart_bloc.dart';
 import 'package:pura_crm/features/salesman/presentation/pages/salesman_homepage.dart';
+import 'package:pura_crm/features/salesman/presentation/pages/salesman_profile_page.dart';
 import 'package:pura_crm/utils/dynamic_navbar.dart';
 
 // import 'package:pura_crm/features/deals/data/datasources/deal_remote_data_source.dart';
@@ -68,10 +70,10 @@ class MyApp extends StatelessWidget {
 
   late final DealRemoteDataSourceImpl dealRemoteDataSource;
   late final DealRepositoryImpl dealRepository;
-  // late final CreateDealUseCase createDealUseCase;
+  late final CreateDealUseCase createDealUseCase;
   late final GetAllDealsUseCase getAllDealsUseCase;
   late final GetDealsOfUserUseCase getDealsOfUserUseCase;
-  // late final UpdateDealUseCase updateDealUseCase;
+  late final UpdateDealUseCase updateDealUseCase;
   late final DeleteDealUseCase deleteDealUseCase;
   @override
   Widget build(BuildContext context) {
@@ -117,10 +119,10 @@ class MyApp extends StatelessWidget {
         ),
         BlocProvider(
           create: (_) => DealBloc(
-            // createDealUseCase: createDealUseCase,
+            createDealUseCase: createDealUseCase,
             getAllDealsUseCase: getAllDealsUseCase,
             getDealsOfUserUseCase: getDealsOfUserUseCase,
-            // updateDealUseCase: updateDealUseCase,
+            updateDealUseCase: updateDealUseCase,
             deleteDealUseCase: deleteDealUseCase,
           ),
         ),
@@ -148,6 +150,19 @@ class MyApp extends StatelessWidget {
           ),
         );
       }
+    }
+    if (uri.pathSegments.isNotEmpty && uri.pathSegments[0] == 'profile') {
+      String? salesmanId;
+      // If the URI has two segments (e.g., /profile/2), set salesmanId to the second segment
+      if (uri.pathSegments.length == 2) {
+        salesmanId = uri.pathSegments[1];
+      }
+      return MaterialPageRoute(
+        builder: (context) => SalesmanProfilePage(
+          repository: salesmanRepository,
+          salesmanId: salesmanId, // Pass the id if available, otherwise null
+        ),
+      );
     }
 
     return MaterialPageRoute(
@@ -178,12 +193,18 @@ class MyApp extends StatelessWidget {
         return UserCartsPage();
       case '/salesmanHome':
         return SalesmanApp();
+      // case '/profile':
+      //   return SalesmanProfilePage(
+      //     repository: salesmanRepository,
+      //     salesmanId: null, // or pass a specific id if available
+      //   );
       case '/deals':
         return UserDealsPage(
           userId: 1,
           getDealsOfUserUseCase: getDealsOfUserUseCase,
         ); // Replace with actual user ID logic if available.
-
+      case '/maps':
+        return MapSample();
       default:
         return HomePage();
     }
@@ -226,6 +247,10 @@ class HomePage extends StatelessWidget {
             ElevatedButton(
               onPressed: () => Navigator.pushNamed(context, '/deals'),
               child: Text('View Deals'),
+            ),
+            ElevatedButton(
+              onPressed: () => Navigator.pushNamed(context, '/maps'),
+              child: Text('Maps'),
             ),
           ],
         ),

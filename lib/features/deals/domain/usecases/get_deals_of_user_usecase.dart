@@ -7,10 +7,7 @@ class GetDealsOfUserUseCase {
   GetDealsOfUserUseCase(this.repository);
 
   Future<List<DealEntity>> call(int userId) async {
-    // Since userId is non-nullable, no extra null-check is needed.
-    print(userId);
     final data = await repository.getDealsOfUser(userId);
-    print("test");
 
     return data;
   }
