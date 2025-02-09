@@ -6,6 +6,14 @@ import 'package:pura_crm/features/auth/data/datasources/remote_data_source.dart'
 import 'package:pura_crm/features/auth/data/repositories/logistic_person_repository.dart';
 import 'package:pura_crm/features/auth/data/repositories/manager_repository_impl.dart';
 import 'package:pura_crm/features/auth/presentation/pages/salesman_page.dart';
+import 'package:pura_crm/features/customer/data/datasources/customer_remote_data_source.dart';
+import 'package:pura_crm/features/customer/data/repositories/customer_repository_impl.dart';
+import 'package:pura_crm/features/customer/domain/repositories/customer_repository.dart';
+import 'package:pura_crm/features/customer/domain/usecases/get_all_customers.dart';
+import 'package:pura_crm/features/customer/presentation/pages/all_customer_page.dart';
+import 'package:pura_crm/features/customer/presentation/pages/customer_create_page.dart';
+import 'package:pura_crm/features/deals/data/datasource/deal_remote_data_source.dart';
+import 'package:pura_crm/features/deals/presentation/pages/create_deal_page.dart';
 import 'package:pura_crm/features/salesman/data/repositories/salesman_repository_impl.dart';
 import 'package:pura_crm/features/auth/domain/repositories/logistic_repository.dart';
 import 'package:pura_crm/features/auth/domain/repositories/manager_repository.dart';
@@ -15,7 +23,6 @@ import 'package:pura_crm/features/auth/presentation/pages/logistic_person_page.d
 import 'package:pura_crm/features/auth/presentation/pages/manager_page.dart';
 import 'package:pura_crm/features/auth/presentation/pages/register_page.dart';
 import 'package:pura_crm/features/auth/presentation/state/salesman_provider.dart';
-import 'package:pura_crm/features/deals/data/datasource/deal_remote_data_source.dart';
 import 'package:pura_crm/features/deals/presentation/state/deal_bloc.dart';
 import 'package:pura_crm/features/maps/presentation/pages/map_screen.dart';
 import 'package:pura_crm/features/products/data/repositories/cart_repository.dart';
@@ -32,16 +39,16 @@ import 'package:pura_crm/features/products/presentation/state/cart_bloc.dart';
 import 'package:pura_crm/features/salesman/presentation/pages/salesman_homepage.dart';
 import 'package:pura_crm/features/salesman/presentation/pages/salesman_profile_page.dart';
 import 'package:pura_crm/utils/dynamic_navbar.dart';
-
-// import 'package:pura_crm/features/deals/data/datasources/deal_remote_data_source.dart';
 import 'package:pura_crm/features/deals/data/repositories/deal_repository_impl.dart';
 import 'package:pura_crm/features/deals/domain/usecases/create_deal_usecase.dart';
 import 'package:pura_crm/features/deals/domain/usecases/get_all_deals_usecase.dart';
 import 'package:pura_crm/features/deals/domain/usecases/get_deals_of_user_usecase.dart';
 import 'package:pura_crm/features/deals/domain/usecases/update_deal_usecase.dart';
 import 'package:pura_crm/features/deals/domain/usecases/delete_deal_usecase.dart';
-// import 'package:pura_crm/features/deals/presentation/bloc/deal_bloc.dart';
 import 'package:pura_crm/features/deals/presentation/pages/deal_list_page.dart';
+
+// Import Customer pages
+import 'package:pura_crm/features/customer/presentation/pages/customer_detail_page.dart';
 
 void main() {
   runApp(MyApp());
@@ -75,6 +82,11 @@ class MyApp extends StatelessWidget {
   late final GetDealsOfUserUseCase getDealsOfUserUseCase;
   late final UpdateDealUseCase updateDealUseCase;
   late final DeleteDealUseCase deleteDealUseCase;
+
+  late final GetAllCustomers getAllCustomers;
+  late final CustomerRepositoryImpl customerRepositoryImpl;
+  late final CustomerRemoteDataSource customerRemoteDataSource;
+
   @override
   Widget build(BuildContext context) {
     // Initialize all the dependencies
@@ -96,11 +108,17 @@ class MyApp extends StatelessWidget {
 
     dealRemoteDataSource = DealRemoteDataSourceImpl(apiClient: apiClient);
     dealRepository = DealRepositoryImpl(remoteDataSource: dealRemoteDataSource);
-    // createDealUseCase = CreateDealUseCase(dealRepository);
+    createDealUseCase = CreateDealUseCase(dealRepository);
     getAllDealsUseCase = GetAllDealsUseCase(dealRepository);
     getDealsOfUserUseCase = GetDealsOfUserUseCase(dealRepository);
-    // updateDealUseCase = UpdateDealUseCase(dealRepository);
+    updateDealUseCase = UpdateDealUseCase(dealRepository);
     deleteDealUseCase = DeleteDealUseCase(dealRepository);
+
+    customerRemoteDataSource =
+        CustomerRemoteDataSourceImpl(apiClient: apiClient);
+    customerRepositoryImpl =
+        CustomerRepositoryImpl(remoteDataSource: customerRemoteDataSource);
+    getAllCustomers = GetAllCustomers(customerRepositoryImpl);
 
     return MultiProvider(
       providers: [
@@ -145,26 +163,46 @@ class MyApp extends StatelessWidget {
           builder: (context) => ProductDetailsPage(
             productId: productId,
             getProductByIdUseCase: GetProductByIdUseCase(productRepository),
-            getCartsByUserIdUseCase:
-                GetCartsByUserIdUseCase(cartRepository), // Add this line
+            getCartsByUserIdUseCase: GetCartsByUserIdUseCase(cartRepository),
           ),
         );
       }
     }
     if (uri.pathSegments.isNotEmpty && uri.pathSegments[0] == 'profile') {
       String? salesmanId;
-      // If the URI has two segments (e.g., /profile/2), set salesmanId to the second segment
       if (uri.pathSegments.length == 2) {
         salesmanId = uri.pathSegments[1];
       }
       return MaterialPageRoute(
         builder: (context) => SalesmanProfilePage(
           repository: salesmanRepository,
-          salesmanId: salesmanId, // Pass the id if available, otherwise null
+          salesmanId: salesmanId,
         ),
       );
     }
 
+    if (uri.pathSegments.isNotEmpty && uri.pathSegments[0] == 'customer') {
+      if (uri.pathSegments.length == 2 && uri.pathSegments[1] == 'list') {
+        return MaterialPageRoute(
+          builder: (context) =>
+              MainLayout(child: CustomerListPage(baseUrl: apiBaseUrl)),
+        );
+      } else if (uri.pathSegments.length == 2 &&
+          uri.pathSegments[1] == 'create') {
+        return MaterialPageRoute(
+          builder: (context) =>
+              MainLayout(child: CreateCustomerPage(baseUrl: apiBaseUrl)),
+        );
+      } else if (uri.pathSegments.length == 2 &&
+          uri.pathSegments[1] == 'detail') {
+        return MaterialPageRoute(
+          builder: (context) => CustomerDetailPage(baseUrl: apiBaseUrl),
+          settings: settings, // This passes the arguments along!
+        );
+      }
+    }
+
+    // Fallback to _buildPage for legacy routes.
     return MaterialPageRoute(
       builder: (context) => MainLayout(
         child: _buildPage(settings.name ?? '/'),
@@ -193,16 +231,19 @@ class MyApp extends StatelessWidget {
         return UserCartsPage();
       case '/salesmanHome':
         return SalesmanApp();
-      // case '/profile':
-      //   return SalesmanProfilePage(
-      //     repository: salesmanRepository,
-      //     salesmanId: null, // or pass a specific id if available
-      //   );
       case '/deals':
         return UserDealsPage(
           userId: 1,
           getDealsOfUserUseCase: getDealsOfUserUseCase,
-        ); // Replace with actual user ID logic if available.
+        );
+      case '/deals/create':
+        return DealCreatePage(
+          userId: 1, // Or use the appropriate user id from your app's logic.
+          getAllCustomersUseCase: getAllCustomers,
+          getCartsByUserIdUseCase: getCartsByUserIdUseCase,
+          createDealUseCase: createDealUseCase,
+        );
+
       case '/maps':
         return MapSample();
       default:
@@ -251,6 +292,11 @@ class HomePage extends StatelessWidget {
             ElevatedButton(
               onPressed: () => Navigator.pushNamed(context, '/maps'),
               child: Text('Maps'),
+            ),
+            // Optionally, add a button to navigate to the customer list.
+            ElevatedButton(
+              onPressed: () => Navigator.pushNamed(context, '/customer/list'),
+              child: Text('View Customers'),
             ),
           ],
         ),

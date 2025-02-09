@@ -1,8 +1,13 @@
+// lib/features/deals/presentation/pages/user_deals_page.dart
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:pura_crm/features/deals/domain/entities/deal_entity.dart';
 import 'package:pura_crm/features/deals/domain/usecases/get_deals_of_user_usecase.dart';
 import 'deal_details_page.dart';
+
+// Define your primary color.
+const primaryColor = Color(0xFFE41B47);
 
 class UserDealsPage extends StatelessWidget {
   final GetDealsOfUserUseCase getDealsOfUserUseCase;
@@ -18,7 +23,7 @@ class UserDealsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: const Color(0xFFE41B47),
+        backgroundColor: primaryColor,
         title: const Text(
           'User Deals',
           style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
@@ -56,7 +61,7 @@ class UserDealsPage extends StatelessWidget {
               final deal = deals[index];
               return GestureDetector(
                 onTap: () {
-                  // Navigate to DealDetailsPage when a deal is tapped
+                  // Navigate to DealDetailsPage when a deal is tapped.
                   Navigator.push(
                     context,
                     MaterialPageRoute(
@@ -158,6 +163,14 @@ class UserDealsPage extends StatelessWidget {
             },
           );
         },
+      ),
+      // Floating Action Button to create a new deal.
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: primaryColor,
+        onPressed: () {
+          Navigator.pushNamed(context, '/deal/create');
+        },
+        child: const Icon(Icons.add, color: Colors.white),
       ),
     );
   }

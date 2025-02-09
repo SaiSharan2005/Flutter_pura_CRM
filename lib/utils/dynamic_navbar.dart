@@ -24,9 +24,9 @@ class _MainLayoutState extends State<MainLayout> {
     final user = await SecureStorageHelper.getUserData(); // Fetch user data
     if (user != null) {
       setState(() {
-        // Assuming user.roles is a list of roles, we're hardcoding as "salesman" for now
+        // Assuming user.roles is a list of roles; hardcoding as "salesman" for now.
         userRole =
-            "salesman"; // You can modify this based on actual roles from user data
+            "salesman"; // Modify this based on your actual user role logic.
       });
     }
   }
@@ -37,15 +37,16 @@ class _MainLayoutState extends State<MainLayout> {
       _selectedIndex = index;
     });
 
-    // Define routes per role
+    // Define routes per role.
+    // For salesman, we changed the third route to '/customer' instead of '/profile'.
     final routes = {
       'admin': ['/dashboard', '/users', '/reports'],
-      'salesman': ['/products', '/deals', '/profile'],
+      'salesman': ['/products', '/deals', '/customer/list'],
       'customer': ['/home', '/orders', '/profile'],
       'supplier': ['/inventory', '/orders', '/profile'],
     };
 
-    // Check if role is loaded and navigate accordingly
+    // Check if role is loaded and navigate accordingly.
     if (userRole != null && routes.containsKey(userRole)) {
       final selectedRoute = routes[userRole!]![index];
       Navigator.pushNamed(context, selectedRoute);
@@ -54,10 +55,10 @@ class _MainLayoutState extends State<MainLayout> {
 
   @override
   Widget build(BuildContext context) {
-    // If userRole is null or loading, show a default bottom nav with at least two items
+    // If userRole is null or loading, show a default bottom nav with at least two items.
     List<BottomNavigationBarItem> navItems = [];
 
-    // Define navigation items based on user role
+    // Define navigation items based on user role.
     switch (userRole) {
       case 'admin':
         navItems = [
@@ -74,7 +75,7 @@ class _MainLayoutState extends State<MainLayout> {
               icon: Icon(Icons.shopping_bag), label: 'Products'),
           BottomNavigationBarItem(
               icon: Icon(Icons.local_offer), label: 'Deals'),
-          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
+          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Customer'),
         ];
         break;
       case 'customer':
@@ -95,15 +96,15 @@ class _MainLayoutState extends State<MainLayout> {
         ];
         break;
       default:
-        // Ensure there's always at least one navigation item
+        // Ensure there's always at least one navigation item.
         navItems = [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
           BottomNavigationBarItem(
-              icon: Icon(Icons.error), label: 'Error'), // Fallback item
+              icon: Icon(Icons.error), label: 'Error'), // Fallback item.
         ];
     }
 
-    // Ensure navItems has at least two items
+    // Ensure navItems has at least two items.
     if (navItems.length < 2) {
       navItems.add(
         BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Fallback'),
@@ -111,12 +112,12 @@ class _MainLayoutState extends State<MainLayout> {
     }
 
     return Scaffold(
-      body: widget.child, // Load the current page
+      body: widget.child, // Load the current page.
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _selectedIndex,
         onTap: _onItemTapped,
         items: navItems,
-        selectedItemColor: Color(0xFFE41B47), // Set primary color
+        selectedItemColor: const Color(0xFFE41B47), // Primary color (red)
         unselectedItemColor: Colors.grey,
       ),
     );

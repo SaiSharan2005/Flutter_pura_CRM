@@ -1,0 +1,20 @@
+{
+  "buildFiles": [
+    "/home/sharan/development/flutter/packages/flutter_tools/gradle/src/main/groovy/CMakeLists.txt"
+  ],
+  "cleanCommandsComponents": [
+    [
+      "/home/sharan/android-sdk/cmake/3.22.1/bin/ninja",
+      "-C",
+      "/home/sharan/project/CRM for monty anna/pura_crm/android/app/.cxx/RelWithDebInfo/3l4b1k4q/x86",
+      "clean"
+    ]
+  ],
+  "buildTargetsCommandComponents": [
+    "/home/sharan/android-sdk/cmake/3.22.1/bin/ninja",
+    "-C",
+    "/home/sharan/project/CRM for monty anna/pura_crm/android/app/.cxx/RelWithDebInfo/3l4b1k4q/x86",
+    "{LIST_OF_TARGETS_TO_BUILD}"
+  ],
+  "libraries": {}
+}

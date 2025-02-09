@@ -1,95 +1,75 @@
-// lib/features/deals/data/datasources/deal_remote_data_source.dart
+// lib/features/customer/data/datasources/customer_remote_data_source.dart
 
 import 'dart:convert';
-
 import 'package:pura_crm/core/utils/api_client.dart';
-import 'package:pura_crm/features/deals/data/models/deal_model.dart';
-import 'package:pura_crm/features/deals/data/models/deal_request.dart';
+import '../models/customer_model.dart';
 
-abstract class DealRemoteDataSource {
-  Future<DealModel> createDeal(DealRequestDto dealModel);
-  Future<List<DealModel>> getAllDeals();
-  Future<List<DealModel>> getDealsOfUser(int userId);
-  Future<DealModel> updateDeal(int id, DealModel dealModel);
-  Future<void> deleteDeal(int id);
+abstract class CustomerRemoteDataSource {
+  Future<CustomerModel> createCustomer(CustomerModel customerModel);
+  Future<List<CustomerModel>> getAllCustomers();
+  Future<CustomerModel> getCustomerById(int id);
+  Future<CustomerModel> updateCustomerById(int id, CustomerModel customerModel);
+  Future<void> deleteCustomerById(int id);
 }
 
-class DealRemoteDataSourceImpl implements DealRemoteDataSource {
+class CustomerRemoteDataSourceImpl implements CustomerRemoteDataSource {
   final ApiClient apiClient;
 
-  DealRemoteDataSourceImpl({required this.apiClient});
+  CustomerRemoteDataSourceImpl({required this.apiClient});
 
   @override
-  Future<DealModel> createDeal(DealRequestDto dealModel) async {
+  Future<CustomerModel> createCustomer(CustomerModel customerModel) async {
     final response = await apiClient.post(
-      '/deals/create',
-      jsonEncode(dealModel.toJson()),
+      '/customers/create',
+      jsonEncode(customerModel.toJson()),
     );
-    if (response.statusCode == 201 || response.statusCode == 200) {
-      final Map<String, dynamic> data = jsonDecode(response.body);
-      return DealModel.fromJson(data);
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      return CustomerModel.fromJson(jsonDecode(response.body));
     } else {
-      throw Exception('Failed to create deal');
+      throw Exception('Failed to create customer');
     }
   }
 
   @override
-  Future<List<DealModel>> getAllDeals() async {
-    final response = await apiClient.get('/deals/all');
+  Future<List<CustomerModel>> getAllCustomers() async {
+    final response = await apiClient.get('/customers/all');
     if (response.statusCode == 200) {
-      final List<dynamic> data = jsonDecode(response.body);
-      return data.map((json) => DealModel.fromJson(json)).toList();
+      final List<dynamic> decoded = jsonDecode(response.body);
+      return decoded.map((json) => CustomerModel.fromJson(json)).toList();
     } else {
-      throw Exception('Failed to get deals');
+      throw Exception('Failed to get customers');
     }
   }
 
   @override
-  Future<List<DealModel>> getDealsOfUser(int userId) async {
-    // Adjust the URL based on your backend design.
-    // For example, you might need to pass the userId as a query parameter:
-    // final response = await apiClient.get('/deals?userId=$userId');
-    final response = await apiClient.get('/deals/');
+  Future<CustomerModel> getCustomerById(int id) async {
+    final response = await apiClient.get('/customers/$id');
     if (response.statusCode == 200) {
-      final List<dynamic> decoded =
-          jsonDecode(response.body); // Removed unnecessary await
-      print(decoded);
-      final List<DealModel> deals = decoded.map<DealModel>((dynamic dealJson) {
-        try {
-          final Map<String, dynamic> dealMap = dealJson as Map<String, dynamic>;
-          return DealModel.fromJson(dealMap);
-        } catch (e) {
-          print("Error converting deal JSON: $dealJson");
-          print("Error: $e");
-          rethrow;
-        }
-      }).toList();
-      print(deals.toString());
-      return deals;
+      return CustomerModel.fromJson(jsonDecode(response.body));
     } else {
-      throw Exception('Failed to get deals for user');
+      throw Exception('Failed to get customer');
     }
   }
 
   @override
-  Future<DealModel> updateDeal(int id, DealModel dealModel) async {
+  Future<CustomerModel> updateCustomerById(
+      int id, CustomerModel customerModel) async {
     final response = await apiClient.put(
-      '/deals/$id',
-      jsonEncode(dealModel.toJson()),
+      '/customers/$id',
+      jsonEncode(customerModel.toJson()),
     );
     if (response.statusCode == 200) {
-      final Map<String, dynamic> data = jsonDecode(response.body);
-      return DealModel.fromJson(data);
+      return CustomerModel.fromJson(jsonDecode(response.body));
     } else {
-      throw Exception('Failed to update deal');
+      throw Exception('Failed to update customer');
     }
   }
 
   @override
-  Future<void> deleteDeal(int id) async {
-    final response = await apiClient.delete('/deals/$id');
+  Future<void> deleteCustomerById(int id) async {
+    final response = await apiClient.delete('/customers/$id');
     if (response.statusCode != 204) {
-      throw Exception('Failed to delete deal');
+      throw Exception('Failed to delete customer');
     }
   }
 }
