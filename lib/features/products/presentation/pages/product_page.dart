@@ -8,7 +8,7 @@ import 'package:pura_crm/utils/snack_bar_utils.dart';
 class ProductCreatePage extends StatefulWidget {
   final CreateProductUseCase createProductUseCase;
 
-  ProductCreatePage({required this.createProductUseCase});
+  const ProductCreatePage({super.key, required this.createProductUseCase});
 
   @override
   _ProductCreatePageState createState() => _ProductCreatePageState();

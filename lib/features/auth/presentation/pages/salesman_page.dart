@@ -5,6 +5,8 @@ import 'package:pura_crm/features/auth/presentation/state/salesman_provider.dart
 import 'package:pura_crm/utils/snack_bar_utils.dart';
 
 class SalesmanCreatePage extends StatefulWidget {
+  const SalesmanCreatePage({super.key});
+
   @override
   _SalesmanCreatePageState createState() => _SalesmanCreatePageState();
 }
@@ -19,7 +21,7 @@ class _SalesmanCreatePageState extends State<SalesmanCreatePage> {
   final TextEditingController _notesController = TextEditingController();
 
   DateTime? _dateOfBirth;
-  DateTime _hireDate = DateTime.now();
+  final DateTime _hireDate = DateTime.now();
   String _status = 'ACTIVE';
   final List<String> _statusOptions = ['ACTIVE', 'JOINING', 'DEACTIVATED'];
 

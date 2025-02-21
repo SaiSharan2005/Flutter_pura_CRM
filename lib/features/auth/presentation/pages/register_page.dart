@@ -8,8 +8,7 @@ import 'package:pura_crm/utils/snack_bar_utils.dart';
 class RegistrationPage extends StatefulWidget {
   final RemoteDataSource remoteDataSource;
 
-  const RegistrationPage({Key? key, required this.remoteDataSource})
-      : super(key: key);
+  const RegistrationPage({super.key, required this.remoteDataSource});
 
   @override
   _RegistrationPageState createState() => _RegistrationPageState();

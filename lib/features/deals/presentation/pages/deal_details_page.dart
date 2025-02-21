@@ -5,7 +5,7 @@ import 'package:pura_crm/features/deals/domain/entities/deal_entity.dart';
 class DealDetailsPage extends StatelessWidget {
   final DealEntity deal;
 
-  const DealDetailsPage({Key? key, required this.deal}) : super(key: key);
+  const DealDetailsPage({super.key, required this.deal});
 
   @override
   Widget build(BuildContext context) {
@@ -14,10 +14,9 @@ class DealDetailsPage extends StatelessWidget {
     // Format dates.
     final formattedExpectedDate =
         DateFormat.yMMMd().format(deal.expectedCloseDate);
-    final formattedActualDate = (deal.actualClosedDate == null ||
-            deal.actualClosedDate == DateTime(2000, 1, 1))
+    final formattedActualDate = (deal.actualClosedDate == DateTime(2000, 1, 1))
         ? "-"
-        : DateFormat.yMMMd().format(deal.actualClosedDate!);
+        : DateFormat.yMMMd().format(deal.actualClosedDate);
 
     final formattedUpdatedDate = (deal.cartId.updatedAt == null ||
             deal.cartId.updatedAt == DateTime(2000, 1, 1))
@@ -80,7 +79,7 @@ class DealDetailsPage extends StatelessWidget {
                 _buildDetailRow("Phone", deal.customerId.phoneNumber ?? "N/A"),
                 _buildDetailRow("Address", deal.customerId.address ?? "N/A"),
                 _buildDetailRow(
-                    "Orders", deal.customerId.noOfOrders?.toString() ?? "0"),
+                    "Orders", deal.customerId.noOfOrders.toString() ?? "0"),
                 _buildDetailRow(
                     "Company", deal.customerId.buyerCompanyName ?? "N/A"),
               ],
@@ -125,7 +124,7 @@ class DealDetailsPage extends StatelessWidget {
                           columnSpacing: 20,
                           dataRowHeight: 70,
                           headingRowHeight: 56,
-                          headingRowColor: MaterialStateProperty.resolveWith(
+                          headingRowColor: WidgetStateProperty.resolveWith(
                             (states) => Colors.grey[200],
                           ),
                           columns: const [

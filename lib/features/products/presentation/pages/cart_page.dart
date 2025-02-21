@@ -5,9 +5,10 @@ import 'package:pura_crm/features/products/presentation/pages/cart_detail.dart';
 import 'package:pura_crm/features/products/presentation/state/cart_bloc.dart';
 import 'package:pura_crm/features/products/presentation/state/cart_event.dart';
 import 'package:pura_crm/features/products/presentation/state/cart_state.dart';
+import 'package:pura_crm/utils/dynamic_navbar.dart'; // Ensure MainLayout is imported
 
 class UserCartsPage extends StatefulWidget {
-  const UserCartsPage({Key? key}) : super(key: key);
+  const UserCartsPage({super.key});
 
   @override
   State<UserCartsPage> createState() => _UserCartsPageState();
@@ -129,7 +130,7 @@ class _UserCartsPageState extends State<UserCartsPage> {
                         itemCount: carts.length,
                         itemBuilder: (context, index) {
                           final cart = carts[index];
-                          final itemCount = cart.items?.length ?? 0;
+                          final itemCount = cart.items.length ?? 0;
 
                           return Card(
                             margin: const EdgeInsets.only(bottom: 16),
@@ -143,7 +144,11 @@ class _UserCartsPageState extends State<UserCartsPage> {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (_) => CartDetailsPage(cart: cart),
+                                    settings:
+                                        RouteSettings(name: '/cart/detail'),
+                                    builder: (_) => MainLayout(
+                                      child: CartDetailsPage(cart: cart),
+                                    ),
                                   ),
                                 );
                               },

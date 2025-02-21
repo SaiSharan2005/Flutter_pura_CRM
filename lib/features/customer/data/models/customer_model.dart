@@ -2,22 +2,14 @@ import 'package:pura_crm/features/customer/domain/entities/customer_entity.dart'
 
 class CustomerModel extends Customer {
   CustomerModel({
-    required int id,
-    required String customerName,
-    required String email,
-    required String phoneNumber,
-    required String address,
-    required int noOfOrders,
-    required String buyerCompanyName,
-  }) : super(
-          id: id,
-          customerName: customerName,
-          email: email,
-          phoneNumber: phoneNumber,
-          address: address,
-          noOfOrders: noOfOrders,
-          buyerCompanyName: buyerCompanyName,
-        );
+    required super.id,
+    required super.customerName,
+    required super.email,
+    required super.phoneNumber,
+    required super.address,
+    required super.noOfOrders,
+    required super.buyerCompanyName,
+  });
 
   factory CustomerModel.fromJson(Map<String, dynamic> json) {
     return CustomerModel(
@@ -31,6 +23,7 @@ class CustomerModel extends Customer {
     );
   }
 
+  @override
   Map<String, dynamic> toJson() {
     return {
       'id': id,

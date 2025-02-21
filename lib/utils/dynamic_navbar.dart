@@ -4,7 +4,7 @@ import 'package:pura_crm/core/utils/secure_storage_helper.dart';
 class MainLayout extends StatefulWidget {
   final Widget
       child; // For page content (non-salesman pages should also be wrapped)
-  const MainLayout({Key? key, required this.child}) : super(key: key);
+  const MainLayout({super.key, required this.child});
 
   @override
   _MainLayoutState createState() => _MainLayoutState();
@@ -62,7 +62,7 @@ class _MainLayoutState extends State<MainLayout> {
 
       // If we're not already on the selected route, navigate.
       if (ModalRoute.of(context)?.settings.name != selectedRoute) {
-        Navigator.pushReplacementNamed(context, selectedRoute);
+        Navigator.pushNamed(context, selectedRoute);
       }
     }
   }
@@ -73,10 +73,20 @@ class _MainLayoutState extends State<MainLayout> {
     int selectedIndex = 0;
     final currentRoute = ModalRoute.of(context)?.settings.name ?? '';
     if (userRole == 'salesman') {
-      selectedIndex = salesmanRouteToIndex[currentRoute] ??
-          2; // Default to Home index (2) if not found.
+      if (currentRoute.startsWith('/product')) {
+        selectedIndex = 1;
+      } else if (currentRoute.startsWith('/cart')) {
+        selectedIndex = 0;
+      } else if (currentRoute.startsWith('/deals')) {
+        selectedIndex = 3;
+      } else if (currentRoute.startsWith('/customer')) {
+        selectedIndex = 4;
+      } else if (currentRoute.startsWith('/salesmanHome')) {
+        selectedIndex = 2;
+      } else {
+        selectedIndex = salesmanRouteToIndex[currentRoute] ?? 2;
+      }
     }
-    // (For other roles, you can set a similar mapping if needed.)
 
     // Build the bottom navigation bar items based on the user role.
     List<BottomNavigationBarItem> navItems = [];

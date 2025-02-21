@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:pura_crm/features/auth/domain/entities/manager_entity.dart';
 import 'package:pura_crm/features/auth/domain/usecases/manager_use_case.dart';
-import 'package:pura_crm/features/auth/domain/repositories/manager_repository.dart';  // Assuming this import
+import 'package:pura_crm/features/auth/domain/repositories/manager_repository.dart'; // Assuming this import
 import 'package:pura_crm/utils/snack_bar_utils.dart';
 
 class ManagerCreatePage extends StatefulWidget {
   final ManagerRepository repository;
 
   // Receiving ManagerRepository to pass it to the use case
-  ManagerCreatePage({required this.repository});
+  const ManagerCreatePage({super.key, required this.repository});
 
   @override
   _ManagerCreatePageState createState() => _ManagerCreatePageState();
@@ -20,7 +20,7 @@ class _ManagerCreatePageState extends State<ManagerCreatePage> {
   final TextEditingController _addressController = TextEditingController();
   final TextEditingController _statusController = TextEditingController();
   DateTime? _dateOfBirth;
-  DateTime _hireDate = DateTime.now();
+  final DateTime _hireDate = DateTime.now();
 
   // Instantiate CreateManagerUseCase with the provided repository
   late final CreateManagerUseCase createManagerUseCase;
@@ -104,26 +104,34 @@ class _ManagerCreatePageState extends State<ManagerCreatePage> {
                               controller: _phoneController,
                               decoration: const InputDecoration(
                                 labelText: 'Phone Number',
-                                prefixIcon: Icon(Icons.phone, color: Colors.red),
+                                prefixIcon:
+                                    Icon(Icons.phone, color: Colors.red),
                                 border: OutlineInputBorder(),
                               ),
                               validator: (value) =>
-                              value == null || value.isEmpty ? 'Please enter the phone number' : null,
+                                  value == null || value.isEmpty
+                                      ? 'Please enter the phone number'
+                                      : null,
                             ),
                             const SizedBox(height: 16),
                             TextFormField(
                               controller: _addressController,
                               decoration: const InputDecoration(
                                 labelText: 'Address',
-                                prefixIcon: Icon(Icons.location_on, color: Colors.red),
+                                prefixIcon:
+                                    Icon(Icons.location_on, color: Colors.red),
                                 border: OutlineInputBorder(),
                               ),
                               validator: (value) =>
-                              value == null || value.isEmpty ? 'Please enter the address' : null,
+                                  value == null || value.isEmpty
+                                      ? 'Please enter the address'
+                                      : null,
                             ),
                             const SizedBox(height: 16),
                             DropdownButtonFormField<String>(
-                              value: _statusController.text.isNotEmpty ? _statusController.text : null,
+                              value: _statusController.text.isNotEmpty
+                                  ? _statusController.text
+                                  : null,
                               decoration: const InputDecoration(
                                 labelText: 'Status',
                                 prefixIcon: Icon(Icons.flag, color: Colors.red),
@@ -145,10 +153,11 @@ class _ManagerCreatePageState extends State<ManagerCreatePage> {
                                 });
                               },
                               validator: (value) =>
-                              value == null || value.isEmpty ? 'Please select a status' : null,
+                                  value == null || value.isEmpty
+                                      ? 'Please select a status'
+                                      : null,
                             ),
                             const SizedBox(height: 16),
-
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
@@ -158,14 +167,19 @@ class _ManagerCreatePageState extends State<ManagerCreatePage> {
                                   child: Text(
                                     _dateOfBirth == null
                                         ? 'Select Date'
-                                        : _dateOfBirth!.toLocal().toString().split(' ')[0],
-                                    style: const TextStyle(color: Color(0xFFE41B47)),
+                                        : _dateOfBirth!
+                                            .toLocal()
+                                            .toString()
+                                            .split(' ')[0],
+                                    style: const TextStyle(
+                                        color: Color(0xFFE41B47)),
                                   ),
                                 ),
                               ],
                             ),
                             const SizedBox(height: 16),
-                            const Text('Hire Date:', style: TextStyle(fontWeight: FontWeight.bold)),
+                            const Text('Hire Date:',
+                                style: TextStyle(fontWeight: FontWeight.bold)),
                             Text(_hireDate.toLocal().toString().split(' ')[0]),
                             const SizedBox(height: 24),
                             ElevatedButton(
@@ -180,13 +194,15 @@ class _ManagerCreatePageState extends State<ManagerCreatePage> {
                                   );
 
                                   try {
-                                    final isSuccess = await createManagerUseCase.execute(newManager);
+                                    final isSuccess = await createManagerUseCase
+                                        .execute(newManager);
                                     if (isSuccess) {
                                       SnackBarUtils.showSuccessSnackBar(
                                         context,
                                         'Manager created successfully',
                                       );
-                                      Navigator.pop(context); // Navigate back to the previous screen
+                                      Navigator.pop(
+                                          context); // Navigate back to the previous screen
                                     } else {
                                       SnackBarUtils.showErrorSnackBar(
                                         context,
@@ -195,7 +211,9 @@ class _ManagerCreatePageState extends State<ManagerCreatePage> {
                                     }
                                   } catch (error) {
                                     ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(content: Text('Error: ${error.toString()}')),
+                                      SnackBar(
+                                          content: Text(
+                                              'Error: ${error.toString()}')),
                                     );
                                   }
                                 }
@@ -205,7 +223,8 @@ class _ManagerCreatePageState extends State<ManagerCreatePage> {
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(12),
                                 ),
-                                padding: const EdgeInsets.symmetric(vertical: 16),
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 16),
                               ),
                               child: const Text('Create Manager'),
                             ),

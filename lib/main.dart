@@ -14,7 +14,9 @@ import 'package:pura_crm/features/customer/domain/usecases/get_all_customers.dar
 import 'package:pura_crm/features/customer/presentation/pages/all_customer_page.dart';
 import 'package:pura_crm/features/customer/presentation/pages/customer_create_page.dart';
 import 'package:pura_crm/features/deals/data/datasource/deal_remote_data_source.dart';
+import 'package:pura_crm/features/deals/domain/entities/deal_entity.dart';
 import 'package:pura_crm/features/deals/presentation/pages/create_deal_page.dart';
+import 'package:pura_crm/features/deals/presentation/pages/deal_details_page.dart';
 import 'package:pura_crm/features/salesman/data/repositories/salesman_repository_impl.dart';
 import 'package:pura_crm/features/auth/domain/repositories/logistic_repository.dart';
 import 'package:pura_crm/features/auth/domain/repositories/manager_repository.dart';
@@ -51,13 +53,46 @@ import 'package:pura_crm/features/deals/presentation/pages/deal_list_page.dart';
 import 'package:pura_crm/features/customer/presentation/pages/customer_detail_page.dart';
 // Import Secure Storage Helper and User model
 import 'package:pura_crm/features/auth/data/models/user_details.dart';
+// Ensure this import exists for product details
+import 'package:pura_crm/features/products/presentation/pages/product_details_page.dart';
+
+// --- Placeholder Widgets for missing pages ---
+// Replace these with your actual implementations.
+
+class DealDetailPage extends StatelessWidget {
+  final String? dealId;
+  const DealDetailPage({super.key, this.dealId});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('Deal Details')),
+      body: Center(child: Text('Details for deal: $dealId')),
+    );
+  }
+}
+
+class CartDetailsPage extends StatelessWidget {
+  final dynamic cart; // Replace dynamic with your cart model
+  const CartDetailsPage({super.key, required this.cart});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('Cart Details')),
+      body: Center(child: Text('Details for cart: ${cart.id}')),
+    );
+  }
+}
+
+// --- End Placeholder Widgets ---
 
 void main() {
   runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  MyApp({Key? key}) : super(key: key);
+  MyApp({super.key});
 
   final String apiBaseUrl = 'https://massive-susi-s-a-i-3e201788.koyeb.app/api';
   final apiClient = ApiClient(
@@ -92,7 +127,7 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Initialize all the dependencies
+    // Initialize dependencies
     remoteDataSource = RemoteDataSource(apiClient);
     salesmanRepository = SalesmanRepositoryImpl(apiClient);
     managerRepository = ManagerRepositoryImpl(apiClient);
@@ -159,54 +194,96 @@ class MyApp extends StatelessWidget {
   Route<dynamic> _generateRoute(RouteSettings settings) {
     Uri uri = Uri.parse(settings.name ?? '/');
 
+    // Product details route: "/product/10"
     if (uri.pathSegments.length == 2 && uri.pathSegments[0] == 'product') {
       final productId = int.tryParse(uri.pathSegments[1]);
       if (productId != null) {
         return MaterialPageRoute(
-          builder: (context) => ProductDetailsPage(
-            productId: productId,
-            getProductByIdUseCase: GetProductByIdUseCase(productRepository),
-            getCartsByUserIdUseCase: GetCartsByUserIdUseCase(cartRepository),
+          settings: settings,
+          builder: (context) => MainLayout(
+            child: ProductDetailsPage(
+              productId: productId,
+              getProductByIdUseCase: GetProductByIdUseCase(productRepository),
+              getCartsByUserIdUseCase: GetCartsByUserIdUseCase(cartRepository),
+            ),
           ),
         );
       }
     }
-    if (uri.pathSegments.isNotEmpty && uri.pathSegments[0] == 'profile') {
-      String? salesmanId;
-      if (uri.pathSegments.length == 2) {
-        salesmanId = uri.pathSegments[1];
+
+    // Deal details route: "/deals/detail/456"
+// Deal details route: "/deals/detail/456"
+    if (uri.pathSegments.length >= 2 &&
+        uri.pathSegments[0] == 'deals' &&
+        uri.pathSegments[1] == 'detail') {
+      final deal = settings.arguments as DealEntity?;
+      if (deal != null) {
+        return MaterialPageRoute(
+          settings: settings,
+          builder: (context) => MainLayout(
+            child: DealDetailsPage(deal: deal),
+          ),
+        );
+      }
+    }
+
+    // Cart detail route: "/cart/detail/789"
+    if (uri.pathSegments.length >= 2 &&
+        uri.pathSegments[0] == 'cart' &&
+        uri.pathSegments[1] == 'detail') {
+      String? cartId;
+      if (uri.pathSegments.length >= 3) {
+        cartId = uri.pathSegments[2];
       }
       return MaterialPageRoute(
-        builder: (context) => SalesmanProfilePage(
-          repository: salesmanRepository,
-          salesmanId: salesmanId,
+        settings: settings,
+        builder: (context) => MainLayout(
+          child: CartDetailsPage(
+            cart: {'id': cartId}, // Replace with your actual cart model.
+          ),
         ),
       );
     }
 
+    // Salesman home route wrapped in MainLayout.
+    if (settings.name == '/salesmanHome') {
+      return MaterialPageRoute(
+        settings: settings,
+        builder: (context) => MainLayout(child: SalesmanApp()),
+      );
+    }
+
+    // Customer pages wrapped in MainLayout.
     if (uri.pathSegments.isNotEmpty && uri.pathSegments[0] == 'customer') {
       if (uri.pathSegments.length == 2 && uri.pathSegments[1] == 'list') {
         return MaterialPageRoute(
-          builder: (context) =>
-              MainLayout(child: CustomerListPage(baseUrl: apiBaseUrl)),
+          settings: settings,
+          builder: (context) => MainLayout(
+            child: CustomerListPage(baseUrl: apiBaseUrl),
+          ),
         );
       } else if (uri.pathSegments.length == 2 &&
           uri.pathSegments[1] == 'create') {
         return MaterialPageRoute(
-          builder: (context) =>
-              MainLayout(child: CreateCustomerPage(baseUrl: apiBaseUrl)),
+          settings: settings,
+          builder: (context) => MainLayout(
+            child: CreateCustomerPage(baseUrl: apiBaseUrl),
+          ),
         );
       } else if (uri.pathSegments.length == 2 &&
           uri.pathSegments[1] == 'detail') {
         return MaterialPageRoute(
-          builder: (context) => CustomerDetailPage(baseUrl: apiBaseUrl),
-          settings: settings, // Pass along any arguments
+          settings: settings,
+          builder: (context) => MainLayout(
+            child: CustomerDetailPage(baseUrl: apiBaseUrl),
+          ),
         );
       }
     }
 
-    // Fallback to _buildPage for legacy routes.
+    // Fallback to legacy routes wrapped in MainLayout.
     return MaterialPageRoute(
+      settings: settings,
       builder: (context) => MainLayout(
         child: _buildPage(settings.name ?? '/'),
       ),
@@ -235,37 +312,29 @@ class MyApp extends StatelessWidget {
       case '/salesmanHome':
         return SalesmanApp();
       case '/deals':
-        // Fetch user id from secure storage dynamically.
         return FutureBuilder<UserDTO?>(
           future: SecureStorageHelper.getUserData(),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return Scaffold(body: Center(child: CircularProgressIndicator()));
             }
-            if (snapshot.hasData &&
-                snapshot.data != null &&
-                snapshot.data!.id != null) {
+            if (snapshot.hasData && snapshot.data != null) {
               return UserDealsPage(
                 userId: snapshot.data!.id,
                 getDealsOfUserUseCase: getDealsOfUserUseCase,
               );
             }
-            return Scaffold(
-              body: Center(child: Text("User not logged in")),
-            );
+            return Scaffold(body: Center(child: Text("User not logged in")));
           },
         );
       case '/deals/create':
-        // Fetch user id from secure storage dynamically.
         return FutureBuilder<UserDTO?>(
           future: SecureStorageHelper.getUserData(),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return Scaffold(body: Center(child: CircularProgressIndicator()));
             }
-            if (snapshot.hasData &&
-                snapshot.data != null &&
-                snapshot.data!.id != null) {
+            if (snapshot.hasData && snapshot.data != null) {
               return DealCreatePage(
                 userId: snapshot.data!.id,
                 getAllCustomersUseCase: getAllCustomers,
@@ -273,9 +342,7 @@ class MyApp extends StatelessWidget {
                 createDealUseCase: createDealUseCase,
               );
             }
-            return Scaffold(
-              body: Center(child: Text("User not logged in")),
-            );
+            return Scaffold(body: Center(child: Text("User not logged in")));
           },
         );
       case '/maps':
@@ -286,51 +353,53 @@ class MyApp extends StatelessWidget {
   }
 }
 
+/// HomePage for navigation testing.
 class HomePage extends StatelessWidget {
+  const HomePage({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Home Page')),
+      appBar: AppBar(title: const Text('Home Page')),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             ElevatedButton(
               onPressed: () => Navigator.pushNamed(context, '/signup'),
-              child: Text('Signup'),
+              child: const Text('Signup'),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () => Navigator.pushNamed(context, '/login'),
-              child: Text('Login'),
+              child: const Text('Login'),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () => Navigator.pushNamed(context, '/salesmanHome'),
-              child: Text('Salesman Home '),
+              child: const Text('Salesman Home'),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () => Navigator.pushNamed(context, '/product/add'),
-              child: Text('Add Product'),
+              child: const Text('Add Product'),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () => Navigator.pushNamed(context, '/product/10'),
-              child: Text('View Product 10'),
+              child: const Text('View Product 10'),
             ),
             ElevatedButton(
               onPressed: () => Navigator.pushNamed(context, '/deals'),
-              child: Text('View Deals'),
+              child: const Text('View Deals'),
             ),
             ElevatedButton(
               onPressed: () => Navigator.pushNamed(context, '/maps'),
-              child: Text('Maps'),
+              child: const Text('Maps'),
             ),
-            // Optionally, add a button to navigate to the customer list.
             ElevatedButton(
               onPressed: () => Navigator.pushNamed(context, '/customer/list'),
-              child: Text('View Customers'),
+              child: const Text('View Customers'),
             ),
           ],
         ),

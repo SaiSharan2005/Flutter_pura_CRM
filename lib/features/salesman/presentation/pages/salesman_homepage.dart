@@ -4,6 +4,8 @@ import 'package:pura_crm/features/products/presentation/widgets/add_cart_fab.dar
 const primaryColor = Color(0xFFE41B47);
 
 class SalesmanApp extends StatelessWidget {
+  const SalesmanApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -14,6 +16,8 @@ class SalesmanApp extends StatelessWidget {
 }
 
 class SalesmanHomePage extends StatefulWidget {
+  const SalesmanHomePage({super.key});
+
   @override
   _SalesmanHomePageState createState() => _SalesmanHomePageState();
 }
@@ -27,8 +31,16 @@ class _SalesmanHomePageState extends State<SalesmanHomePage> {
     },
     {'title': 'Send follow-up emails', 'subtitle': 'Sent', 'completed': true},
     {'title': 'Update deal status', 'subtitle': 'Reviewed', 'completed': true},
-    {'title': 'Review sales performance', 'subtitle': 'Due Noon', 'completed': false},
-    {'title': 'Product demo session', 'subtitle': 'Scheduled Afternoon', 'completed': false},
+    {
+      'title': 'Review sales performance',
+      'subtitle': 'Due Noon',
+      'completed': false
+    },
+    {
+      'title': 'Product demo session',
+      'subtitle': 'Scheduled Afternoon',
+      'completed': false
+    },
     {'title': 'Attend team meeting', 'subtitle': 'Evening', 'completed': false},
   ];
 
@@ -92,7 +104,8 @@ class _SalesmanHomePageState extends State<SalesmanHomePage> {
             Expanded(
               child: ListView.separated(
                 itemCount: tasks.length,
-                separatorBuilder: (context, index) => const SizedBox(height: 10),
+                separatorBuilder: (context, index) =>
+                    const SizedBox(height: 10),
                 itemBuilder: (context, index) {
                   final task = tasks[index];
                   return Card(

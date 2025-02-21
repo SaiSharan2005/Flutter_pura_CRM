@@ -45,7 +45,7 @@ class SalesmanProvider with ChangeNotifier {
 
   Future<void> fetchAllSalesmanDetails() async {
     final details = await salesmanRepository.getAllSalesmanDetails();
-    if (details != null && details.isNotEmpty) {
+    if (details.isNotEmpty) {
       allSalesmen = details;
     } else {
       allSalesmen = [];

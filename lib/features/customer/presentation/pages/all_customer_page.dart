@@ -18,7 +18,7 @@ const primaryColor = Color(0xFFE41B47);
 class CustomerListPage extends StatelessWidget {
   final String baseUrl;
 
-  const CustomerListPage({Key? key, required this.baseUrl}) : super(key: key);
+  const CustomerListPage({super.key, required this.baseUrl});
 
   @override
   Widget build(BuildContext context) {

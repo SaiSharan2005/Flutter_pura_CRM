@@ -14,12 +14,12 @@ class ProductDetailsPage extends StatefulWidget {
   final int productId;
 
   const ProductDetailsPage({
-    Key? key,
+    super.key,
     required this.getProductByIdUseCase,
     required this.getCartsByUserIdUseCase, // ADD THIS
 
     required this.productId,
-  }) : super(key: key);
+  });
 
   @override
   _ProductDetailsPageState createState() => _ProductDetailsPageState();
@@ -37,7 +37,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
   void _addToLatestCart() async {
     try {
       final userData = await SecureStorageHelper.getUserData();
-      if (userData == null || userData.id == null) {
+      if (userData == null) {
         print("User not logged in or user ID not available.");
         return;
       }
@@ -76,7 +76,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
         SnackBar(content: Text('Error adding to cart: $e')),
       );
     }
-    void _addToLatestCart() async {
+    void addToLatestCart() async {
       try {
         final userId =
             1; // Assuming userId is 1; replace with actual logic to get user ID.

@@ -9,10 +9,10 @@ class SalesmanProfilePage extends StatefulWidget {
   final SalesmanRepository repository;
 
   const SalesmanProfilePage({
-    Key? key,
+    super.key,
     this.salesmanId,
     required this.repository,
-  }) : super(key: key);
+  });
 
   @override
   _SalesmanProfilePageState createState() => _SalesmanProfilePageState();

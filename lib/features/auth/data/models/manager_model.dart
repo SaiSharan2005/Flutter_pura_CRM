@@ -1,21 +1,13 @@
 import 'package:pura_crm/features/auth/domain/entities/manager_entity.dart';
 
-
-
 class ManagerModel extends ManagerEntity {
   ManagerModel({
-    required String phoneNumber,
-    required String address,
-    required DateTime dateOfBirth,
-    required String status,
-    required DateTime hireDate,
-  }) : super(
-    phoneNumber: phoneNumber,
-    address: address,
-    dateOfBirth: dateOfBirth,
-    status: status,
-    hireDate: hireDate,
-  );
+    required super.phoneNumber,
+    required super.address,
+    required super.dateOfBirth,
+    required super.status,
+    required super.hireDate,
+  });
 
   factory ManagerModel.fromJson(Map<String, dynamic> json) {
     return ManagerModel(
@@ -27,6 +19,7 @@ class ManagerModel extends ManagerEntity {
     );
   }
 
+  @override
   Map<String, dynamic> toJson() {
     return {
       'phoneNumber': phoneNumber,

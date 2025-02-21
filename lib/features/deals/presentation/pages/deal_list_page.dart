@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:pura_crm/features/deals/domain/entities/deal_entity.dart';
 import 'package:pura_crm/features/deals/domain/usecases/get_deals_of_user_usecase.dart';
+import 'package:pura_crm/utils/dynamic_navbar.dart';
 import 'deal_details_page.dart';
 
 // Define your primary color.
@@ -14,10 +15,10 @@ class UserDealsPage extends StatelessWidget {
   final int userId; // The ID of the user whose deals you want to display
 
   const UserDealsPage({
-    Key? key,
+    super.key,
     required this.getDealsOfUserUseCase,
     required this.userId,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -61,11 +62,13 @@ class UserDealsPage extends StatelessWidget {
               final deal = deals[index];
               return GestureDetector(
                 onTap: () {
-                  // Navigate to DealDetailsPage when a deal is tapped.
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => DealDetailsPage(deal: deal),
+                      settings: RouteSettings(name: '/deals/details'),
+                      builder: (context) => MainLayout(
+                        child: DealDetailsPage(deal: deal),
+                      ),
                     ),
                   );
                 },

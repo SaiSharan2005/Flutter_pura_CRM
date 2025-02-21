@@ -10,7 +10,7 @@ import 'package:pura_crm/utils/snack_bar_utils.dart';
 class LoginPage extends StatefulWidget {
   final RemoteDataSource remoteDataSource;
 
-  const LoginPage({Key? key, required this.remoteDataSource}) : super(key: key);
+  const LoginPage({super.key, required this.remoteDataSource});
 
   @override
   _LoginPageState createState() => _LoginPageState();

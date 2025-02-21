@@ -8,7 +8,7 @@ import 'package:pura_crm/features/products/presentation/state/cart_state.dart';
 
 class CartDetailsPage extends StatefulWidget {
   final CartEntity cart;
-  const CartDetailsPage({Key? key, required this.cart}) : super(key: key);
+  const CartDetailsPage({super.key, required this.cart});
 
   @override
   _CartDetailsPageState createState() => _CartDetailsPageState();

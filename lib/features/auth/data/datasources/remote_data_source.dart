@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'package:http/http.dart' as http;
 import 'package:pura_crm/core/utils/api_client.dart';
 import 'package:pura_crm/features/auth/data/models/user_details.dart';
 
@@ -8,7 +7,8 @@ class RemoteDataSource {
 
   RemoteDataSource(this.apiClient);
 
-  Future<String> register(String username, String email, String password, List<String> roles) async {
+  Future<String> register(String username, String email, String password,
+      List<String> roles) async {
     final response = await apiClient.post(
       '/auth/register',
       jsonEncode({
@@ -53,5 +53,4 @@ class RemoteDataSource {
       throw Exception('Unauthenticated: ${response.body}');
     }
   }
-
 }

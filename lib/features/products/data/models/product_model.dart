@@ -4,30 +4,18 @@ import 'package:pura_crm/features/products/domain/entities/product_entity.dart';
 
 class ProductModel extends Product {
   const ProductModel({
-    int? id, // Optional to handle creation without ID
-    required String productName,
-    required String description,
-    required double price,
-    required String sku,
-    required String productStatus,
-    required int quantityAvailable,
-    required String dimensions,
-    required int warrantyPeriod,
-    required double weight,
-    User? user,
-  }) : super(
-          id: id,
-          productName: productName,
-          description: description,
-          price: price,
-          sku: sku,
-          productStatus: productStatus,
-          quantityAvailable: quantityAvailable,
-          dimensions: dimensions,
-          warrantyPeriod: warrantyPeriod,
-          weight: weight,
-          user: user,
-        );
+    super.id, // Optional to handle creation without ID
+    required super.productName,
+    required super.description,
+    required super.price,
+    required super.sku,
+    required super.productStatus,
+    required super.quantityAvailable,
+    required super.dimensions,
+    required super.warrantyPeriod,
+    required super.weight,
+    super.user,
+  });
 
   /// Factory constructor to create a [ProductModel] from JSON
   factory ProductModel.fromJson(Map<String, dynamic> json) {

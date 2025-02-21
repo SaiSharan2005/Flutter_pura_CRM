@@ -5,8 +5,7 @@ import 'package:pura_crm/features/products/domain/usecases/product_usecase.dart'
 class AllProductsPage extends StatefulWidget {
   final GetAllProductsUseCase getAllProductsUseCase;
 
-  const AllProductsPage({Key? key, required this.getAllProductsUseCase})
-      : super(key: key);
+  const AllProductsPage({super.key, required this.getAllProductsUseCase});
 
   @override
   _AllProductsPageState createState() => _AllProductsPageState();
@@ -18,7 +17,7 @@ class _AllProductsPageState extends State<AllProductsPage> {
   List<Product> _filteredProducts = [];
   bool _isLoading = true;
   String _errorMessage = '';
-  String _selectedCategory = 'All';
+  final String _selectedCategory = 'All';
 
   final List<String> _categories = ['New Arrivals', 'Sneakers', 'Trending'];
 
@@ -179,8 +178,7 @@ class ProductCardView extends StatelessWidget {
   final Product product;
   final Function(int?)? onTap;
 
-  const ProductCardView({Key? key, required this.product, this.onTap})
-      : super(key: key);
+  const ProductCardView({super.key, required this.product, this.onTap});
 
   @override
   Widget build(BuildContext context) {

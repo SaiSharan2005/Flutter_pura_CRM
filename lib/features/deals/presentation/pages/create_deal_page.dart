@@ -18,12 +18,12 @@ class DealCreatePage extends StatefulWidget {
   final CreateDealUseCase createDealUseCase;
 
   const DealCreatePage({
-    Key? key,
+    super.key,
     required this.userId,
     required this.getAllCustomersUseCase,
     required this.getCartsByUserIdUseCase,
     required this.createDealUseCase,
-  }) : super(key: key);
+  });
 
   @override
   _DealCreatePageState createState() => _DealCreatePageState();

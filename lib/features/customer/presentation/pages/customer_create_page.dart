@@ -17,7 +17,7 @@ const primaryColor = Color(0xFFE41B47);
 class CreateCustomerPage extends StatefulWidget {
   final String baseUrl;
 
-  const CreateCustomerPage({Key? key, required this.baseUrl}) : super(key: key);
+  const CreateCustomerPage({super.key, required this.baseUrl});
 
   @override
   _CreateCustomerPageState createState() => _CreateCustomerPageState();

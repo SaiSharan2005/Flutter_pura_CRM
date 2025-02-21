@@ -10,7 +10,7 @@ import 'package:pura_crm/utils/snack_bar_utils.dart';
 class LogisticPersonCreatePage extends StatefulWidget {
   final LogisticPersonRepository repository;
 
-  LogisticPersonCreatePage({required this.repository});
+  const LogisticPersonCreatePage({super.key, required this.repository});
 
   @override
   _LogisticPersonCreatePageState createState() =>

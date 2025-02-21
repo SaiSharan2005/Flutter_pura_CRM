@@ -7,7 +7,7 @@ import 'package:intl/intl.dart';
 
 class DealCard extends StatelessWidget {
   final DealEntity deal;
-  const DealCard({Key? key, required this.deal}) : super(key: key);
+  const DealCard({super.key, required this.deal});
   @override
   Widget build(BuildContext context) {
     final formattedDate = DateFormat.yMd().format(deal.expectedCloseDate);

@@ -19,7 +19,7 @@ const primaryColor = Color(0xFFE41B47);
 class CustomerDetailPage extends StatefulWidget {
   final String baseUrl;
 
-  const CustomerDetailPage({Key? key, required this.baseUrl}) : super(key: key);
+  const CustomerDetailPage({super.key, required this.baseUrl});
 
   @override
   _CustomerDetailPageState createState() => _CustomerDetailPageState();
@@ -301,11 +301,11 @@ class _CustomerDetailPageState extends State<CustomerDetailPage> {
           const SizedBox(height: 20),
           ElevatedButton(
             onPressed: _saveUpdates,
-            child: const Text("Save Updates"),
             style: ElevatedButton.styleFrom(
               backgroundColor: primaryColor,
               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
             ),
+            child: const Text("Save Updates"),
           ),
         ],
       ),
