@@ -86,7 +86,7 @@ class _RegistrationPageState extends State<RegistrationPage>
         // Navigate to the specific route based on the selected role
         String targetRoute;
         if (_selectedRole == 'SALESMAN') {
-          targetRoute = '/salesman';
+          targetRoute = '/salesman/create';
         } else if (_selectedRole == 'MANAGER') {
           targetRoute = '/manager';
           // } else if (_selectedRole == 'DELIVERY') {

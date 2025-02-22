@@ -96,7 +96,7 @@ class _UserCartsPageState extends State<UserCartsPage> {
         backgroundColor: primaryColor,
         title: const Text(
           'Your Carts',
-          style: TextStyle(fontWeight: FontWeight.bold),
+          style: TextStyle(fontWeight: FontWeight.bold,    color: Colors.white,),
         ),
         centerTitle: true,
         actions: [

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:pura_crm/features/auth/presentation/state/salesman_provider.dart';
 import 'package:pura_crm/features/salesman/domain/entities/salesman.dart';
+import 'package:pura_crm/features/auth/presentation/state/salesman_provider.dart';
 import 'package:pura_crm/utils/snack_bar_utils.dart';
 
 class SalesmanCreatePage extends StatefulWidget {
@@ -259,7 +259,13 @@ class _SalesmanCreatePageState extends State<SalesmanCreatePage> {
                                 padding:
                                     const EdgeInsets.symmetric(vertical: 16),
                               ),
-                              child: const Text('Create Salesman'),
+                              child: const Text(
+                                'Create Salesman',
+                                style: TextStyle(
+                                  color:
+                                      Colors.white, // Set text color to white
+                                ),
+                              ),
                             ),
                           ],
                         ),

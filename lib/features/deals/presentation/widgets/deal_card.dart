@@ -1,6 +1,5 @@
 // lib/features/deals/presentation/widgets/deal_card.dart
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:pura_crm/features/deals/domain/entities/deal_entity.dart';
 import 'package:intl/intl.dart';

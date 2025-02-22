@@ -130,7 +130,8 @@ class _CartDetailsPageState extends State<CartDetailsPage> {
           centerTitle: true,
           title: const Text(
             'Cart Details',
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20,    color: Colors.white, // Set text color to white
+),
           ),
         ),
         body: Column(

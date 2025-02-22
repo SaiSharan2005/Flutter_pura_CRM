@@ -6,7 +6,6 @@ import 'package:pura_crm/core/utils/secure_storage_helper.dart';
 import 'package:pura_crm/features/auth/data/datasources/remote_data_source.dart';
 import 'package:pura_crm/features/auth/data/repositories/logistic_person_repository.dart';
 import 'package:pura_crm/features/auth/data/repositories/manager_repository_impl.dart';
-import 'package:pura_crm/features/auth/presentation/pages/salesman_page.dart';
 import 'package:pura_crm/features/customer/data/datasources/customer_remote_data_source.dart';
 import 'package:pura_crm/features/customer/data/repositories/customer_repository_impl.dart';
 import 'package:pura_crm/features/customer/domain/repositories/customer_repository.dart';
@@ -39,6 +38,7 @@ import 'package:pura_crm/features/products/presentation/pages/product_page.dart'
 import 'package:pura_crm/features/products/presentation/pages/product_details_page.dart';
 import 'package:http/http.dart' as http;
 import 'package:pura_crm/features/products/presentation/state/cart_bloc.dart';
+import 'package:pura_crm/features/salesman/presentation/pages/craete_salesman_page.dart';
 import 'package:pura_crm/features/salesman/presentation/pages/salesman_homepage.dart';
 import 'package:pura_crm/features/salesman/presentation/pages/salesman_profile_page.dart';
 import 'package:pura_crm/utils/dynamic_navbar.dart';
@@ -193,6 +193,7 @@ class MyApp extends StatelessWidget {
 
   Route<dynamic> _generateRoute(RouteSettings settings) {
     Uri uri = Uri.parse(settings.name ?? '/');
+    print("Navigating to: ${settings.name}");
 
     // Product details route: "/product/10"
     if (uri.pathSegments.length == 2 && uri.pathSegments[0] == 'product') {
@@ -252,7 +253,17 @@ class MyApp extends StatelessWidget {
         builder: (context) => MainLayout(child: SalesmanApp()),
       );
     }
-
+    if (settings.name == '/salesman/profile') {
+      return MaterialPageRoute(
+        settings: settings,
+        builder: (context) => MainLayout(
+          child: SalesmanProfilePage(
+            // Pass a valid salesman id as a String.
+            repository: salesmanRepository,
+          ),
+        ),
+      );
+    }
     // Customer pages wrapped in MainLayout.
     if (uri.pathSegments.isNotEmpty && uri.pathSegments[0] == 'customer') {
       if (uri.pathSegments.length == 2 && uri.pathSegments[1] == 'list') {
@@ -296,7 +307,7 @@ class MyApp extends StatelessWidget {
         return RegistrationPage(remoteDataSource: remoteDataSource);
       case '/login':
         return LoginPage(remoteDataSource: remoteDataSource);
-      case '/salesman':
+      case '/salesman/create':
         return SalesmanCreatePage();
       case '/manager':
         return ManagerCreatePage(repository: managerRepository);

@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:pura_crm/features/auth/domain/entities/user.dart';
 import 'package:pura_crm/features/products/domain/entities/product_entity.dart';
 

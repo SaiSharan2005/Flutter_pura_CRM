@@ -1,0 +1,7 @@
+add quantity option in product details
+add units for each every product 
+size option 
+change image when the size is selected
+change of prize refer image
+add extra stage as customer information
+add button in creat deal save , place order 

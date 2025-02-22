@@ -24,9 +24,4 @@ class LogisticPersonModel extends LogisticPersonEntity {
       notes: json['notes'],
     );
   }
-
-  @override
-  Map<String, dynamic> toJson() {
-    return super.toJson();
-  }
 }
