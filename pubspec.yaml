@@ -30,7 +30,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-    
+  image_picker: ^1.0.7  # Check for the latest version on pub.dev
+
   intl: ^0.17.0
   http: ^1.0.0 # For making API requests
   flutter_bloc: ^8.1.3 # For state management (Cubit/Bloc)

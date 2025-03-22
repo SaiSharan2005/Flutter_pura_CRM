@@ -2,23 +2,107 @@
 
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:pura_crm/features/auth/domain/entities/user.dart';
+import 'package:pura_crm/features/customer/domain/entities/customer_entity.dart';
 import 'package:pura_crm/features/deals/domain/entities/deal_entity.dart';
-import 'package:pura_crm/features/deals/domain/usecases/get_deals_of_user_usecase.dart';
+import 'package:pura_crm/features/deals/presentation/pages/deal_details_page.dart';
+import 'package:pura_crm/features/products/domain/entities/cart_entity.dart';
 import 'package:pura_crm/utils/dynamic_navbar.dart';
-import 'deal_details_page.dart';
 
 // Define your primary color.
 const primaryColor = Color(0xFFE41B47);
 
 class UserDealsPage extends StatelessWidget {
-  final GetDealsOfUserUseCase getDealsOfUserUseCase;
   final int userId; // The ID of the user whose deals you want to display
 
   const UserDealsPage({
     super.key,
-    required this.getDealsOfUserUseCase,
     required this.userId,
   });
+
+  // Simulated demo data for deals.
+  Future<List<DealEntity>> _fetchDemoDeals() async {
+    await Future.delayed(const Duration(seconds: 1));
+
+    // Create demo Customer objects.
+    final customer1 = Customer(
+      id: 1,
+      customerName: "John Doe",
+      email: "johndoe@example.com",
+      phoneNumber: "123-456-7890",
+      address: "123 Elm Street, Springfield, IL, USA",
+      noOfOrders: 25,
+      buyerCompanyName: "Doe Enterprises",
+    );
+    final customer2 = Customer(
+      id: 2,
+      customerName: "David",
+      email: "david@gmail.com",
+      phoneNumber: "8125281005",
+      address: "Osmangunj 5-2-778",
+      noOfOrders: 0,
+      buyerCompanyName: "David",
+    );
+
+    // Create demo CartEntity objects.
+    final cart1 = CartEntity(
+      id: 1,
+      userId: userId,
+      status: "ACTIVE",
+      createdAt: DateTime.now(),
+      updatedAt: DateTime.now(),
+      items: [], // Assume empty for demo.
+    );
+    final cart2 = CartEntity(
+      id: 2,
+      userId: userId,
+      status: "ACTIVE",
+      createdAt: DateTime.now(),
+      updatedAt: DateTime.now(),
+      items: [],
+    );
+
+    // Create demo User (salesman) object.
+    final salesman = User(
+      id: userId,
+      username: "salesman",
+      email: "salesman@example.com",
+    );
+
+    // Create a demo deal for Cow Ghee Sale.
+    final demoDeal1 = DealEntity(
+      id: 1,
+      customerId: customer1,
+      cartId: cart1,
+      userId: salesman,
+      dealName: "Cow Ghee Sale",
+      dealStage: "Open",
+      amount: 320.00,
+      quantity: 1,
+      deliveryAddress: "123 Elm Street, Springfield",
+      expectedCloseDate: DateTime.now().add(const Duration(days: 7)),
+      actualClosedDate: null,
+      note: "This is a demo deal for Cow Ghee.",
+    );
+
+    // Create a demo deal for Buffalo Ghee Discount.
+    final demoDeal2 = DealEntity(
+      id: 2,
+      customerId: customer2,
+      cartId: cart2,
+      userId: salesman,
+      dealName: "Buffalo Ghee Discount",
+      dealStage: "Closed",
+      amount: 2999.99,
+      quantity: 1,
+      deliveryAddress: "456 Oak Avenue, Metropolis",
+      expectedCloseDate: DateTime.now().add(const Duration(days: 3)),
+      actualClosedDate: DateTime.now().add(const Duration(days: 2)),
+      note: "Deal closed successfully.",
+    );
+
+    return [demoDeal1, demoDeal2];
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -32,7 +116,7 @@ class UserDealsPage extends StatelessWidget {
         centerTitle: true,
       ),
       body: FutureBuilder<List<DealEntity>>(
-        future: getDealsOfUserUseCase(userId),
+        future: _fetchDemoDeals(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
@@ -65,7 +149,7 @@ class UserDealsPage extends StatelessWidget {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      settings: RouteSettings(name: '/deals/details'),
+                      settings: const RouteSettings(name: '/deals/details'),
                       builder: (context) => MainLayout(
                         child: DealDetailsPage(deal: deal),
                       ),

@@ -19,7 +19,6 @@ class CartEntity extends Equatable {
   });
 
   factory CartEntity.fromJson(Map<String, dynamic> json) {
-    // Extract userId from either "userId" key or nested "user" object.
     int userId;
     if (json.containsKey('userId')) {
       userId = json['userId'] ?? 0;
@@ -32,7 +31,6 @@ class CartEntity extends Equatable {
     return CartEntity(
       id: json['id'] ?? 0,
       userId: userId,
-      // Use 'cartItems' as the JSON key for the list of items.
       items: json['cartItems'] != null
           ? (json['cartItems'] as List<dynamic>)
               .map((item) =>

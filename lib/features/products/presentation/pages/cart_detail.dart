@@ -15,29 +15,28 @@ class CartDetailsPage extends StatefulWidget {
 }
 
 class _CartDetailsPageState extends State<CartDetailsPage> {
-  /// Create a local copy of the cart items so that modifications can be saved later.
+  /// Local copy of the cart items for modifications.
   late List<CartItemEntity> localCartItems;
 
-  /// Keep a copy of the original quantities to check for modifications.
+  /// Copy of original quantities to detect modifications.
   late List<int> originalQuantities;
 
-  /// Keep track of items that are removed from the cart.
+  /// Track IDs of items removed from the cart.
   final List<int> removedItemIds = [];
 
   @override
   void initState() {
     super.initState();
-    // If items is null, default to an empty list.
+    // If widget.cart.items is null, default to an empty list.
     localCartItems =
         (widget.cart.items ?? []).map((item) => item.copyWith()).toList();
     originalQuantities =
-        (widget.cart.items ?? []).map((item) => item.quantity ?? 0).toList();
+        (widget.cart.items ?? []).map((item) => item.quantity).toList();
   }
 
   void _increaseQuantity(int index) {
     setState(() {
-      // Use default value if quantity is null.
-      int currentQuantity = localCartItems[index].quantity ?? 0;
+      final currentQuantity = localCartItems[index].quantity;
       localCartItems[index] = localCartItems[index].copyWith(
         quantity: currentQuantity + 1,
       );
@@ -46,14 +45,12 @@ class _CartDetailsPageState extends State<CartDetailsPage> {
 
   void _decreaseQuantity(int index) {
     setState(() {
-      int currentQuantity = localCartItems[index].quantity ?? 0;
-      // If the quantity is greater than 1, simply decrease it.
+      final currentQuantity = localCartItems[index].quantity;
       if (currentQuantity > 1) {
         localCartItems[index] = localCartItems[index].copyWith(
           quantity: currentQuantity - 1,
         );
       } else {
-        // If the quantity is 1 (or null) and the user decrements, remove the item.
         removedItemIds.add(localCartItems[index].id);
         localCartItems.removeAt(index);
         originalQuantities.removeAt(index);
@@ -61,27 +58,27 @@ class _CartDetailsPageState extends State<CartDetailsPage> {
     });
   }
 
-  /// Dispatch update and removal events for cart items based on the modifications.
+  /// Dispatch update and removal events based on changes.
   void _saveChanges() {
-    final bloc = context.read<CartBloc>();
+    final bloc = context.read<DemoCartBloc>();
     bool hasChange = false;
 
-    // Dispatch removal events for all items that were removed.
+    // Process removed items.
     for (var removedId in removedItemIds) {
       hasChange = true;
       bloc.add(RemoveItemFromCartEvent(widget.cart.userId, removedId));
     }
 
-    // Dispatch update events for items that remain but with a modified quantity.
+    // Process quantity updates.
     for (int i = 0; i < localCartItems.length; i++) {
       final modifiedItem = localCartItems[i];
       final originalQuantity = originalQuantities[i];
-      if ((modifiedItem.quantity ?? 0) != originalQuantity) {
+      if (modifiedItem.quantity != originalQuantity) {
         hasChange = true;
         bloc.add(UpdateCartItemEvent(
           widget.cart.userId,
           modifiedItem.id,
-          modifiedItem.quantity ?? 0,
+          modifiedItem.quantity,
         ));
       }
     }
@@ -91,7 +88,7 @@ class _CartDetailsPageState extends State<CartDetailsPage> {
         const SnackBar(content: Text('No changes detected')),
       );
     } else {
-      // If the cart is empty after removal, redirect to the cart page.
+      // If the cart is empty after removals, navigate back to the cart page.
       if (localCartItems.isEmpty) {
         Navigator.pushNamedAndRemoveUntil(context, '/cart', (route) => false);
       } else {
@@ -100,24 +97,20 @@ class _CartDetailsPageState extends State<CartDetailsPage> {
     }
   }
 
-  /// Calculate the total sum based on the current local items.
+  /// Calculate the total sum of the cart.
   double _calculateTotalSum() {
     double sum = 0;
     for (var item in localCartItems) {
-      // Use default values for price and quantity if they are null.
-      double price = item.price ?? 0.0;
-      int quantity = item.quantity ?? 0;
-      sum += price * quantity;
+      sum += item.price * item.quantity;
     }
     return sum;
   }
 
   @override
   Widget build(BuildContext context) {
-    // Define your primary color.
     const primaryColor = Color(0xFFE41B47);
 
-    return BlocListener<CartBloc, CartState>(
+    return BlocListener<DemoCartBloc, CartState>(
       listener: (context, state) {
         if (state is CartError) {
           ScaffoldMessenger.of(context)
@@ -130,13 +123,16 @@ class _CartDetailsPageState extends State<CartDetailsPage> {
           centerTitle: true,
           title: const Text(
             'Cart Details',
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20,    color: Colors.white, // Set text color to white
-),
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 20,
+              color: Colors.white,
+            ),
           ),
         ),
         body: Column(
           children: [
-            // Header with minimal cart details.
+            // Cart header.
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
               child: Row(
@@ -186,19 +182,19 @@ class _CartDetailsPageState extends State<CartDetailsPage> {
                             padding: const EdgeInsets.all(16),
                             child: Row(
                               children: [
-                                // Left: Product Image and Details.
+                                // Product image and tap action.
                                 ClipRRect(
                                   borderRadius: BorderRadius.circular(10),
                                   child: GestureDetector(
                                     onTap: () {
-                                      // Navigate to product detail page.
                                       Navigator.pushNamed(
                                         context,
-                                        '/product/${item.product.id}',
+                                        '/product/${item.productVariant.id}',
                                       );
                                     },
-                                    child: Image.asset(
-                                      'assets/logo.png', // Replace with the actual product image.
+                                    child: Image.network(
+                                      item.productVariant.imageUrls.first
+                                          .imageUrl,
                                       width: 60,
                                       height: 60,
                                       fit: BoxFit.cover,
@@ -206,7 +202,7 @@ class _CartDetailsPageState extends State<CartDetailsPage> {
                                   ),
                                 ),
                                 const SizedBox(width: 16),
-                                // Expanded product details.
+                                // Product details.
                                 Expanded(
                                   child: Column(
                                     crossAxisAlignment:
@@ -216,11 +212,11 @@ class _CartDetailsPageState extends State<CartDetailsPage> {
                                         onTap: () {
                                           Navigator.pushNamed(
                                             context,
-                                            '/product/${item.product.id}',
+                                            '/product/${item.productVariant.id}',
                                           );
                                         },
                                         child: Text(
-                                          item.product.productName ?? '',
+                                          item.productVariant.variantName,
                                           style: const TextStyle(
                                             fontSize: 18,
                                             fontWeight: FontWeight.bold,
@@ -229,13 +225,13 @@ class _CartDetailsPageState extends State<CartDetailsPage> {
                                       ),
                                       const SizedBox(height: 8),
                                       Text(
-                                        "Price: \$${(item.price ?? 0.0).toStringAsFixed(2)}",
+                                        "Price: \$${item.price.toStringAsFixed(2)}",
                                         style: const TextStyle(fontSize: 16),
                                       ),
                                     ],
                                   ),
                                 ),
-                                // Right: Quantity controls and total price.
+                                // Quantity controls and total price.
                                 Column(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
@@ -252,7 +248,7 @@ class _CartDetailsPageState extends State<CartDetailsPage> {
                                               _decreaseQuantity(index),
                                         ),
                                         Text(
-                                          "${item.quantity ?? 0}",
+                                          "${item.quantity}",
                                           style: const TextStyle(
                                             fontSize: 18,
                                             fontWeight: FontWeight.bold,
@@ -271,7 +267,7 @@ class _CartDetailsPageState extends State<CartDetailsPage> {
                                     ),
                                     const SizedBox(height: 8),
                                     Text(
-                                      "\$${((item.price ?? 0.0) * (item.quantity ?? 0)).toStringAsFixed(2)}",
+                                      "\$${(item.price * item.quantity).toStringAsFixed(2)}",
                                       style: const TextStyle(
                                         fontSize: 16,
                                         fontWeight: FontWeight.bold,

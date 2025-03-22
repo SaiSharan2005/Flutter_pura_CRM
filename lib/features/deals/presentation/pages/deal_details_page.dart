@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:pura_crm/features/deals/domain/entities/deal_entity.dart';
 
 class DealDetailsPage extends StatelessWidget {
@@ -17,15 +18,16 @@ class DealDetailsPage extends StatelessWidget {
     final formattedActualDate = (deal.actualClosedDate == DateTime(2000, 1, 1))
         ? "-"
         : DateFormat.yMMMd().format(deal.actualClosedDate);
-
     final formattedUpdatedDate = (deal.cartId.updatedAt == null ||
             deal.cartId.updatedAt == DateTime(2000, 1, 1))
         ? "-"
         : DateFormat.yMMMd().format(deal.cartId.updatedAt!);
 
-    // Placeholder values for createdAt/updatedAt.
-    // final cartCreatedAt = "Unknown";
-    // final cartUpdatedAt = "Unknown";
+    // Define the initial camera position for Himathnagar, Hyderabad, Telangana, India.
+    const initialCameraPosition = CameraPosition(
+      target: LatLng(17.3890, 78.4744),
+      zoom: 14,
+    );
 
     return Scaffold(
       appBar: AppBar(
@@ -79,20 +81,20 @@ class DealDetailsPage extends StatelessWidget {
                 _buildDetailRow("Phone", deal.customerId.phoneNumber ?? "N/A"),
                 _buildDetailRow("Address", deal.customerId.address ?? "N/A"),
                 _buildDetailRow(
-                    "Orders", deal.customerId.noOfOrders.toString() ?? "0"),
+                    "Orders", deal.customerId.noOfOrders.toString()),
                 _buildDetailRow(
                     "Company", deal.customerId.buyerCompanyName ?? "N/A"),
               ],
             ),
             const SizedBox(height: 20),
-            // Cart Details Section (with status badge)
+            // Cart Details Section
             _buildExpansionSection(
               title: "Cart Details",
               trailingWidget: Container(
                 padding:
                     const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                 decoration: BoxDecoration(
-                  color: Colors.blue, // Badge color for cart status.
+                  color: Colors.blue,
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Text(
@@ -124,9 +126,8 @@ class DealDetailsPage extends StatelessWidget {
                           columnSpacing: 20,
                           dataRowHeight: 70,
                           headingRowHeight: 56,
-                          headingRowColor: WidgetStateProperty.resolveWith(
-                            (states) => Colors.grey[200],
-                          ),
+                          headingRowColor: MaterialStateColor.resolveWith(
+                              (states) => Colors.grey[200]!),
                           columns: const [
                             DataColumn(
                               label: Text(
@@ -164,18 +165,19 @@ class DealDetailsPage extends StatelessWidget {
                               DataCell(
                                 ClipRRect(
                                   borderRadius: BorderRadius.circular(8.0),
-                                  child: Image.asset(
-                                    'assets/logo.png',
+                                  child: Image.network(
+                                    item.productVariant.imageUrls.first
+                                        .imageUrl,
                                     width: 50,
                                     height: 50,
                                     fit: BoxFit.cover,
                                   ),
                                 ),
                               ),
-                              DataCell(Text(item.product.productName)),
+                              DataCell(Text(item.productVariant.variantName)),
                               DataCell(
                                 SizedBox(
-                                  width: 50, // Small width for quantity column.
+                                  width: 50,
                                   child: Text(
                                     '${item.quantity}',
                                     textAlign: TextAlign.center,
@@ -196,20 +198,31 @@ class DealDetailsPage extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 20),
-            // Salesman Details Section
-            _buildExpansionSection(
-              title: "Salesman Details",
-              children: [
-                _buildDetailRow("Username", deal.userId.username),
-                _buildDetailRow("Email", deal.userId.email),
-              ],
-            ),
-            const SizedBox(height: 20),
             // Deal Stage Section
             _buildExpansionSection(
               title: "Deal Stage",
               children: [
                 _buildDealStages(primaryColor),
+              ],
+            ),
+            const SizedBox(height: 20),
+            // Location Section: Rectangular Map for Himathnagar, Hyderabad.
+            _buildExpansionSection(
+              title: "Location",
+              children: [
+                Container(
+                  height: 200,
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Colors.grey),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: GoogleMap(
+                    initialCameraPosition: initialCameraPosition,
+                    myLocationButtonEnabled: false,
+                    zoomControlsEnabled: false,
+                  ),
+                ),
               ],
             ),
           ],
@@ -218,7 +231,7 @@ class DealDetailsPage extends StatelessWidget {
     );
   }
 
-  /// Builds an expansion section with a custom title, optional trailing widget, and child widgets.
+  /// Builds an expansion section with a title, an optional trailing widget, and children.
   Widget _buildExpansionSection({
     required String title,
     Widget? trailingWidget,
@@ -271,10 +284,8 @@ class DealDetailsPage extends StatelessWidget {
     );
   }
 
-  /// Builds a horizontal deal stages widget.
   /// Builds a vertical list of deal stages.
   Widget _buildDealStages(Color primaryColor) {
-    // Define your stages.
     final stages = [
       "Deal Initiation",
       "Admin Approval",
@@ -283,10 +294,8 @@ class DealDetailsPage extends StatelessWidget {
       "Payment Confirmation",
       "Deal Closure"
     ];
-
-    // Determine the current stage index by matching deal.dealStage.
     int currentStageIndex = stages.indexOf(deal.dealStage);
-    if (currentStageIndex < 0) currentStageIndex = 0; // Fallback if not found.
+    if (currentStageIndex < 0) currentStageIndex = 0;
 
     return Column(
       children: List.generate(stages.length, (index) {
@@ -294,10 +303,8 @@ class DealDetailsPage extends StatelessWidget {
         return Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Indicator column.
             Column(
               children: [
-                // The circle indicator.
                 CircleAvatar(
                   radius: 20,
                   backgroundColor: isActive ? primaryColor : Colors.grey[300],
@@ -309,19 +316,17 @@ class DealDetailsPage extends StatelessWidget {
                     ),
                   ),
                 ),
-                // The vertical line connecting to the next step (if not the last step).
                 if (index != stages.length - 1)
                   Container(
                     width: 2,
                     height: 30,
-                    color: (index < currentStageIndex)
+                    color: index < currentStageIndex
                         ? primaryColor
                         : Colors.grey[300],
                   ),
               ],
             ),
             const SizedBox(width: 12),
-            // Stage name.
             Expanded(
               child: Container(
                 padding: const EdgeInsets.symmetric(vertical: 8),

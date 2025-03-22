@@ -1,124 +1,101 @@
+import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:pura_crm/features/products/data/models/cartItem_model.dart';
+import 'package:pura_crm/features/products/data/models/cart_model.dart';
+import 'package:pura_crm/features/products/data/models/inventory_model.dart';
+import 'package:pura_crm/features/products/data/models/product_variant_image_model.dart';
+import 'package:pura_crm/features/products/data/models/product_variant_model.dart';
 import 'package:pura_crm/features/products/domain/usecases/cart_usecase.dart';
 import 'package:pura_crm/features/products/presentation/state/cart_event.dart';
 import 'package:pura_crm/features/products/presentation/state/cart_state.dart';
 
-class CartBloc extends Bloc<CartEvent, CartState> {
-  final CreateCartUseCase createCartUseCase;
-  final AddItemToCartUseCase addItemToCartUseCase;
-  final RemoveItemFromCartUseCase removeItemFromCartUseCase;
-  final RemoveCartUseCase removeCartUseCase; // Added this
-  final UpdateCartItemUseCase updateCartItemUseCase;
+class DemoCartBloc extends Bloc<CartEvent, CartState> {
   final GetCartsByUserIdUseCase getCartsByUserIdUseCase;
-  final GetCartItemsUseCase getCartItemsUseCase;
 
-  CartBloc({
-    required this.createCartUseCase,
-    required this.addItemToCartUseCase,
-    required this.removeItemFromCartUseCase,
-    required this.removeCartUseCase, // Added here
-    required this.updateCartItemUseCase,
+  DemoCartBloc({
     required this.getCartsByUserIdUseCase,
-    required this.getCartItemsUseCase,
   }) : super(CartInitial()) {
-    on<CreateCartEvent>(_onCreateCart);
-    on<AddItemToCartEvent>(_onAddItemToCart);
-    on<RemoveItemFromCartEvent>(_onRemoveItemFromCart);
-    on<RemoveCartEvent>(_onRemoveCart); // Added this handler
-    on<UpdateCartItemEvent>(_onUpdateCartItem);
     on<GetCartsByUserIdEvent>(_onGetCartsByUserId);
-    on<GetCartItemsEvent>(_onGetCartItems);
   }
 
-  Future<void> _onCreateCart(
-      CreateCartEvent event, Emitter<CartState> emit) async {
-    emit(CartLoading());
-    try {
-      final cart = await createCartUseCase(event.userId);
-      emit(CartSuccess(cart));
-    } catch (e) {
-      emit(CartError('Failed to create cart: ${e.toString()}'));
-    }
-  }
-
-  Future<void> _onAddItemToCart(
-      AddItemToCartEvent event, Emitter<CartState> emit) async {
-    emit(CartLoading());
-    try {
-      final cart = await addItemToCartUseCase(
-          event.cartId, event.productId, event.quantity);
-      emit(CartSuccess(cart));
-    } catch (e) {
-      emit(CartError('Failed to add item: ${e.toString()}'));
-    }
-  }
-
-  Future<void> _onRemoveItemFromCart(
-      RemoveItemFromCartEvent event, Emitter<CartState> emit) async {
-    emit(CartLoading());
-    try {
-      await removeItemFromCartUseCase(event.userId, event.cartItemId);
-      final carts = await getCartsByUserIdUseCase(event.userId);
-      emit(CartListSuccess(carts));
-    } catch (e) {
-      emit(CartError('Failed to remove item: ${e.toString()}'));
-    }
-  }
-
-  // New event handler to remove a cart.
-  Future<void> _onRemoveCart(
-      RemoveCartEvent event, Emitter<CartState> emit) async {
-    emit(CartLoading());
-
-    try {
-      await removeCartUseCase(event.cartId); // Try to delete the cart
-    } catch (e) {
-      print('Cart removal failed: ${e.toString()}, but continuing as success.');
-      // We **ignore** the failure and move forward
-    }
-
-    // Fetch updated cart list
-    final carts = await getCartsByUserIdUseCase(event.userId);
-
-    // If fetching carts fails, just return an empty list instead of an error
-    emit(CartListSuccess(carts.isNotEmpty ? carts : []));
-  }
-
-  Future<void> _onUpdateCartItem(
-      UpdateCartItemEvent event, Emitter<CartState> emit) async {
-    emit(CartLoading());
-    try {
-      await updateCartItemUseCase(
-          event.userId, event.cartItemId, event.quantity);
-      // final cartItems = await getCartItemsUseCase(event.userId);
-
-      // If cartItems fetching fails, we just keep the last success state
-      final carts = await getCartsByUserIdUseCase(event.userId);
-      emit(CartListSuccess(carts));
-    } catch (e) {
-      emit(CartError('Failed to update item: ${e.toString()}'));
-    }
-  }
-
-  Future<void> _onGetCartsByUserId(
+  FutureOr<void> _onGetCartsByUserId(
       GetCartsByUserIdEvent event, Emitter<CartState> emit) async {
-    emit(CartLoading());
-    try {
-      final carts = await getCartsByUserIdUseCase(event.userId);
-      emit(CartListSuccess(carts));
-    } catch (e) {
-      emit(CartError('Failed to fetch carts: ${e.toString()}'));
-    }
-  }
+    // Simulate a network delay.
+    await Future.delayed(const Duration(seconds: 1));
 
-  Future<void> _onGetCartItems(
-      GetCartItemsEvent event, Emitter<CartState> emit) async {
-    emit(CartLoading());
-    try {
-      final cartItems = await getCartItemsUseCase(event.userId);
-      emit(CartItemsSuccess(cartItems));
-    } catch (e) {
-      emit(CartError('Failed to fetch items: ${e.toString()}'));
-    }
+    // --- Variant 1 (500 gm) from JSON sample ---
+    final variantImage1a = ProductVariantImageModel(
+      id: 2,
+      imageUrl:
+          "https://res.cloudinary.com/div9ovdhn/image/upload/v1741722071/vybrmvi4sahmyzup6evj.jpg",
+    );
+    final variantImage1b = ProductVariantImageModel(
+      id: 3,
+      imageUrl:
+          "https://res.cloudinary.com/div9ovdhn/image/upload/v1741722073/lt5gvq8xehrrhqwwkcrp.jpg",
+    );
+    final productVariant1 = ProductVariantModel(
+      id: 2,
+      variantName: "500 gm",
+      price: 320.00,
+      sku: "SKU-001",
+      units: "packet",
+      createdDate: DateTime.parse("2025-03-11T19:41:10"),
+      updatedDate: DateTime.now(),
+      imageUrls: [variantImage1a, variantImage1b],
+      inventories: [],
+    );
+
+    // --- Variant 2 (5 kg) from JSON sample ---
+    final variantImage2a = ProductVariantImageModel(
+      id: 4,
+      imageUrl:
+          "https://res.cloudinary.com/div9ovdhn/image/upload/v1741722283/cj0vbg4b2hgakzxfkuoq.jpg",
+    );
+    final variantImage2b = ProductVariantImageModel(
+      id: 5,
+      imageUrl:
+          "https://res.cloudinary.com/div9ovdhn/image/upload/v1741722284/ytwefzsp8irpk5jiinfm.jpg",
+    );
+    final productVariant2 = ProductVariantModel(
+      id: 3,
+      variantName: "5 kg",
+      price: 2999.99,
+      sku: "SKU-002",
+      units: "Tins",
+      createdDate: DateTime.parse("2025-03-11T19:44:42"),
+      updatedDate: DateTime.now(),
+      imageUrls: [variantImage2a, variantImage2b],
+      inventories: [],
+    );
+
+    // Create cart items from each variant.
+    final cartItem1 = CartItemModel(
+      id: 1,
+      productVariant: productVariant1,
+      quantity: 1,
+      price: productVariant1.price,
+      totalPrice: productVariant1.price * 1,
+    );
+    final cartItem2 = CartItemModel(
+      id: 2,
+      productVariant: productVariant2,
+      quantity: 1,
+      price: productVariant2.price,
+      totalPrice: productVariant2.price * 1,
+    );
+
+    // Create a demo cart containing both items.
+    final demoCart = CartModel(
+      id: 1,
+      userId: event.userId,
+      items: [cartItem1, cartItem2],
+      status: "ACTIVE",
+      createdAt: DateTime.now(),
+      updatedAt: DateTime.now(),
+    );
+
+    // Emit the success state with the demo cart (converted to its entity).
+    emit(CartsLoadSuccess([demoCart.toEntity()]));
   }
 }

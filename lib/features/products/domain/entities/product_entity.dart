@@ -1,45 +1,24 @@
 import 'package:equatable/equatable.dart';
-import 'package:pura_crm/features/auth/domain/entities/user.dart';
+import 'product_variant.dart';
 
 class Product extends Equatable {
   final int? id;
   final String productName;
   final String description;
-  final double price;
-  final String sku;
   final String productStatus;
-  final int quantityAvailable;
-  final String dimensions;
-  final int warrantyPeriod;
-  final double weight;
-  final User? user;
+  final DateTime createdDate;
+  final List<ProductVariant> variants;
 
   const Product({
     this.id,
     required this.productName,
     required this.description,
-    required this.price,
-    required this.sku,
     required this.productStatus,
-    required this.quantityAvailable,
-    required this.dimensions,
-    required this.warrantyPeriod,
-    required this.weight,
-    this.user,
+    required this.createdDate,
+    required this.variants,
   });
 
   @override
-  List<Object?> get props => [
-        id,
-        productName,
-        description,
-        price,
-        sku,
-        productStatus,
-        quantityAvailable,
-        dimensions,
-        warrantyPeriod,
-        weight,
-        user
-      ];
+  List<Object?> get props =>
+      [id, productName, description, productStatus, createdDate, variants];
 }

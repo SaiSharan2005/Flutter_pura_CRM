@@ -1,5 +1,5 @@
-import 'package:pura_crm/features/products/domain/entities/cart_entity.dart';
 import 'package:pura_crm/features/products/domain/entities/cartItem_entity.dart';
+import 'package:pura_crm/features/products/domain/entities/cart_entity.dart';
 import 'package:pura_crm/features/products/domain/repositories/cart_repository.dart';
 
 class CreateCartUseCase {
@@ -7,7 +7,8 @@ class CreateCartUseCase {
 
   CreateCartUseCase(this.repository);
 
-  Future<CartEntity> call(int userId) async {
+  Future<CartEntity> call() async {
+    // Since the repository.createCart() does not require a userId, we removed it.
     return await repository.createCart();
   }
 }
@@ -17,8 +18,9 @@ class AddItemToCartUseCase {
 
   AddItemToCartUseCase(this.repository);
 
-  Future<CartEntity> call(int userId, int productId, int quantity) async {
-    return await repository.addItemToCart(userId, productId, quantity);
+  Future<CartEntity> call(int cartId, int variantId, int quantity) async {
+    // Changed the first parameter to cartId and renamed productId to variantId.
+    return await repository.addItemToCart(cartId, variantId, quantity);
   }
 }
 
@@ -37,7 +39,8 @@ class UpdateCartItemUseCase {
 
   UpdateCartItemUseCase(this.repository);
 
-  Future<CartItemEntity> call(int userId, int cartItemId, int quantity) async {
+  Future<CartEntity> call(int userId, int cartItemId, int quantity) async {
+    // Updated return type to CartEntity to match the repository method.
     return await repository.updateCartItem(userId, cartItemId, quantity);
   }
 }
@@ -62,13 +65,12 @@ class GetCartItemsUseCase {
   }
 }
 
-// remove cart funtionality need to uncomment later
 class RemoveCartUseCase {
   final CartRepository repository;
 
   RemoveCartUseCase(this.repository);
 
   Future<void> call(int cartId) async {
-    return await repository.deleteCart(cartId);
+    await repository.deleteCart(cartId);
   }
 }

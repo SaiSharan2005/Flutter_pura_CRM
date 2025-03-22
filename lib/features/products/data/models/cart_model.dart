@@ -19,7 +19,6 @@ class CartModel {
   });
 
   factory CartModel.fromJson(Map<String, dynamic> json) {
-    // Extract userId from either "userId" key or nested "user" object.
     int userId;
     if (json.containsKey('userId')) {
       userId = json['userId'] ?? 0;
@@ -32,10 +31,11 @@ class CartModel {
     return CartModel(
       id: json['id'],
       userId: userId,
-      // Parse using 'cartItems' key.
-      items: (json['cartItems'] as List)
-          .map((item) => CartItemModel.fromJson(item))
-          .toList(),
+      items: json['cartItems'] != null
+          ? (json['cartItems'] as List)
+              .map((item) => CartItemModel.fromJson(item))
+              .toList()
+          : [],
       status: json['status'],
       createdAt: json['createdAt'] != null
           ? DateTime.parse(json['createdAt'])

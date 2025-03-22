@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pura_crm/features/products/domain/entities/product_entity.dart';
-import 'package:pura_crm/features/products/domain/usecases/product_usecase.dart';
+import 'package:pura_crm/features/products/domain/usecases/get_all_products_usecase.dart';
 
 class AllProductsPage extends StatefulWidget {
   final GetAllProductsUseCase getAllProductsUseCase;
@@ -19,7 +19,13 @@ class _AllProductsPageState extends State<AllProductsPage> {
   String _errorMessage = '';
   final String _selectedCategory = 'All';
 
-  final List<String> _categories = ['New Arrivals', 'Sneakers', 'Trending'];
+  // For example purposes, these categories can be used to filter products by tags
+  final List<String> _categories = [
+    'All',
+    'New Arrivals',
+    'Sneakers',
+    'Trending'
+  ];
 
   @override
   void initState() {
@@ -32,7 +38,6 @@ class _AllProductsPageState extends State<AllProductsPage> {
       _isLoading = true;
       _errorMessage = '';
     });
-
     try {
       final response = await widget.getAllProductsUseCase.call();
       setState(() {
@@ -53,17 +58,18 @@ class _AllProductsPageState extends State<AllProductsPage> {
     setState(() {
       _filteredProducts = _products.where((product) {
         return product.productName.toLowerCase().contains(lowerQuery) ||
-            product.sku.toLowerCase().contains(lowerQuery);
+            product.description.toLowerCase().contains(lowerQuery);
       }).toList();
     });
   }
 
   void _filterByCategory(String category) {
     setState(() {
-      // _selectedCategory = category;
-      // _filteredProducts = _selectedCategory == 'All'
-      //     // ? _products
-      // : _products.where((product) => product.category == _selectedCategory).toList();
+      _filteredProducts = category == 'All'
+          ? _products
+          : _products
+              .where((product) => product.productStatus == category)
+              .toList();
     });
   }
 
@@ -99,23 +105,21 @@ class _AllProductsPageState extends State<AllProductsPage> {
             scrollDirection: Axis.horizontal,
             padding: const EdgeInsets.symmetric(horizontal: 8.0),
             child: Row(
-              children: [
-                ..._categories.map((category) {
-                  final isSelected = _selectedCategory == category;
-                  return Padding(
-                    padding: const EdgeInsets.only(right: 8.0),
-                    child: ChoiceChip(
-                      label: Text(category),
-                      selected: isSelected,
-                      onSelected: (_) => _filterByCategory(category),
-                      selectedColor: Colors.black,
-                      labelStyle: TextStyle(
-                        color: isSelected ? Colors.white : Colors.black,
-                      ),
+              children: _categories.map((category) {
+                final isSelected = _selectedCategory == category;
+                return Padding(
+                  padding: const EdgeInsets.only(right: 8.0),
+                  child: ChoiceChip(
+                    label: Text(category),
+                    selected: isSelected,
+                    onSelected: (_) => _filterByCategory(category),
+                    selectedColor: Colors.black,
+                    labelStyle: TextStyle(
+                      color: isSelected ? Colors.white : Colors.black,
                     ),
-                  );
-                }),
-              ],
+                  ),
+                );
+              }).toList(),
             ),
           ),
 
@@ -156,20 +160,6 @@ class _AllProductsPageState extends State<AllProductsPage> {
           ),
         ],
       ),
-      // bottomNavigationBar: BottomNavigationBar(
-      //   currentIndex: 0,
-      //   type: BottomNavigationBarType.fixed,
-      //   selectedItemColor: Colors.black,
-      //   items: const [
-      //     BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-      //     BottomNavigationBarItem(icon: Icon(Icons.search), label: 'Search'),
-      //     BottomNavigationBarItem(
-      //         icon: Icon(Icons.local_offer), label: 'Brands'),
-      //     BottomNavigationBarItem(
-      //         icon: Icon(Icons.favorite_border), label: 'Wishlist'),
-      //     BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Me'),
-      //   ],
-      // ),
     );
   }
 }
@@ -182,6 +172,19 @@ class ProductCardView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Get the first variant's first image URL (without fallback)
+    String? imageUrl;
+    if (product.variants.isNotEmpty &&
+        product.variants.first.imageUrls.isNotEmpty) {
+      imageUrl = product.variants.first.imageUrls.first.imageUrl;
+      ;
+    }
+
+    // Get price from first variant if available
+    String priceText = product.variants.isNotEmpty
+        ? '\$${product.variants.first.price.toStringAsFixed(2)}'
+        : 'N/A';
+
     return GestureDetector(
       onTap: () => onTap?.call(product.id),
       child: Card(
@@ -190,19 +193,21 @@ class ProductCardView extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Product Image
-            Expanded(
-              flex: 2,
-              child: ClipRRect(
-                borderRadius:
-                    const BorderRadius.vertical(top: Radius.circular(8.0)),
-                child: Image.asset(
-                  'assets/logo.png', // Replace with product.image
-                  fit: BoxFit.cover,
-                  width: double.infinity,
+            // Product Image (ONLY if available)
+            if (imageUrl != null && imageUrl.isNotEmpty)
+              Expanded(
+                flex: 2,
+                child: ClipRRect(
+                  borderRadius:
+                      const BorderRadius.vertical(top: Radius.circular(8.0)),
+                  child: Image.network(
+                    imageUrl,
+                    fit: BoxFit.cover,
+                    width: double.infinity,
+                  ),
                 ),
               ),
-            ),
+
             // Product Info
             Padding(
               padding: const EdgeInsets.all(8.0),
@@ -218,7 +223,7 @@ class ProductCardView extends StatelessWidget {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    '\$${product.price}',
+                    priceText,
                     style: const TextStyle(color: Colors.green, fontSize: 12),
                   ),
                 ],

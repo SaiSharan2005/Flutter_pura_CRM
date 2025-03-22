@@ -30,13 +30,13 @@ class CartRepositoryImpl implements CartRepository {
 
   @override
   Future<CartEntity> addItemToCart(
-      int cartId, int productId, int quantity) async {
+      int cartId, int variantId, int quantity) async {
     try {
       final response = await apiClient.post(
         '/cart/add',
         jsonEncode({
           'cartId': cartId,
-          'productId': productId,
+          'variantId': variantId, // Updated key for variant id
           'quantity': quantity,
         }),
       );
@@ -71,18 +71,15 @@ class CartRepositoryImpl implements CartRepository {
   }
 
   @override
-  Future<CartItemEntity> updateCartItem(
+  Future<CartEntity> updateCartItem(
       int userId, int cartItemId, int quantity) async {
     try {
       final url = '/cart/update/$cartItemId?userId=$userId&quantity=$quantity';
-      final body = jsonEncode({
-        'userId': userId,
-        'quantity': quantity,
-      });
-      final response = await apiClient.put(url, body);
+      // Since the backend uses query parameters, an empty body is sent.
+      final response = await apiClient.put(url, '');
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
-        final cartModel = CartItemModel.fromJson(data);
+        final cartModel = CartModel.fromJson(data);
         return cartModel.toEntity();
       } else {
         throw Exception('Failed to update cart item: ${response.statusCode}');
@@ -117,7 +114,8 @@ class CartRepositoryImpl implements CartRepository {
       if (response.statusCode == 200) {
         final List<dynamic> data = jsonDecode(response.body);
         return data
-            .map((cartItemJson) => CartItemEntity.fromJson(cartItemJson))
+            .map((cartItemJson) =>
+                CartItemEntity.fromJson(cartItemJson as Map<String, dynamic>))
             .toList();
       } else {
         throw Exception('Failed to fetch cart items: ${response.statusCode}');
@@ -127,7 +125,6 @@ class CartRepositoryImpl implements CartRepository {
     }
   }
 
-  // New method: delete a cart by its cartId.
   @override
   Future<void> deleteCart(int cartId) async {
     try {

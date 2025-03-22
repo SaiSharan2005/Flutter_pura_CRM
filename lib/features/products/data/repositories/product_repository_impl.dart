@@ -11,64 +11,39 @@ class ProductRepositoryImpl implements ProductRepository {
   ProductRepositoryImpl(this.apiClient);
 
   @override
-  Future<List<ProductModel>> getAllProducts() async {
-    try {
-      // Make the API call
-      final response = await apiClient.get('/products/all');
-
-      if (response.statusCode == 200) {
-        // Decode the JSON response
-        final List<dynamic> data = json.decode(response.body);
-        print(data);
-        final List<ProductModel> products = data
-            .map((item) => ProductModel.fromJson(item as Map<String, dynamic>))
-            .toList();
-
-        // Print the products to verify
-        for (var product in products) {
-          print('Product Name: ${product.productName}');
-          print('Description: ${product.description}');
-          print('Price: ${product.price}');
-          print('User: ${product.user?.username ?? 'No user'}');
-          print('---');
-        }
-        print(products);
-
-        // Map the raw JSON into a list of ProductModel
-        return products;
-      } else {
-        // Handle non-200 status codes
-        throw Exception('Failed to fetch products: ${response.statusCode}');
-      }
-    } catch (error) {
-      // Catch and throw any errors
-      throw Exception('Error fetching products: $error');
+  Future<List<Product>> getAllProducts() async {
+    final response = await apiClient.get('/products/all');
+    if (response.statusCode == 200) {
+      final List<dynamic> data = json.decode(response.body);
+      return data
+          .map((item) => ProductModel.fromJson(item as Map<String, dynamic>))
+          .toList();
+    } else {
+      throw Exception('Failed to fetch products: ${response.statusCode}');
     }
   }
 
   @override
   Future<Product> getProductById(int id) async {
     final response = await apiClient.get('/products/$id');
-
-    // Parse the response body as JSON
-    final Map<String, dynamic> responseData = jsonDecode(response.body);
-
-    // Convert the JSON to a ProductModel instance
-    return ProductModel.fromJson(responseData);
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> responseData = json.decode(response.body);
+      return ProductModel.fromJson(responseData);
+    } else {
+      throw Exception('Failed to fetch product with id $id');
+    }
   }
 
   @override
   Future<void> createProduct(Product product) async {
     final String jsonData = jsonEncode((product as ProductModel).toJson());
-
     await apiClient.post('/products/create', jsonData);
   }
 
   @override
   Future<void> updateProduct(int id, Product product) async {
     final String jsonData = jsonEncode((product as ProductModel).toJson());
-
-    await apiClient.put('/products/$id', jsonData);
+    await apiClient.put('/products/$id/details', jsonData);
   }
 
   @override
@@ -76,7 +51,3 @@ class ProductRepositoryImpl implements ProductRepository {
     await apiClient.delete('/products/$id');
   }
 }
-
-// extension on Response {
-//   Map<String, dynamic> get data => null;
-// }

@@ -6,8 +6,13 @@ import 'package:pura_crm/features/customer/domain/entities/customer_entity.dart'
 import 'package:pura_crm/features/customer/domain/usecases/get_all_customers.dart';
 import 'package:pura_crm/features/deals/domain/entities/deal_entity.dart';
 import 'package:pura_crm/features/deals/domain/usecases/create_deal_usecase.dart';
+import 'package:pura_crm/features/deals/presentation/pages/himathnagar_map.dart';
+import 'package:pura_crm/features/products/data/models/product_variant_image_model.dart';
+import 'package:pura_crm/features/products/data/models/product_variant_model.dart';
+import 'package:pura_crm/features/products/domain/entities/cartItem_entity.dart';
 import 'package:pura_crm/features/products/domain/entities/cart_entity.dart';
 import 'package:pura_crm/features/products/domain/usecases/cart_usecase.dart';
+// Import the new map widget.
 
 const primaryColor = Color(0xFFE41B47);
 
@@ -57,28 +62,83 @@ class _DealCreatePageState extends State<DealCreatePage> {
     _fetchDropdownData();
   }
 
+  // For demo purposes, we simulate data instead of calling real use cases.
   Future<void> _fetchDropdownData() async {
-    try {
-      final customers = await widget.getAllCustomersUseCase.call();
-      final carts = await widget.getCartsByUserIdUseCase.call(widget.userId);
-      setState(() {
-        _customers = customers;
-        _carts = carts;
-        if (_customers.isNotEmpty) selectedCustomer = _customers.first;
-        if (_carts.isNotEmpty) selectedCart = _carts.first;
-      });
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Error loading data: $e")),
-      );
-    }
+    // Simulate a network delay.
+    await Future.delayed(const Duration(seconds: 1));
+
+    // Create demo customers.
+    final demoCustomers = [
+      Customer(
+        id: 1,
+        customerName: "John Doe",
+        email: "johndoe@example.com",
+        phoneNumber: "123-456-7890",
+        address: "123 Elm Street, Springfield, IL, USA",
+        noOfOrders: 25,
+        buyerCompanyName: "Doe Enterprises",
+      ),
+      Customer(
+        id: 2,
+        customerName: "David",
+        email: "david@gmail.com",
+        phoneNumber: "8125281005",
+        address: "Osmangunj 5-2-778",
+        noOfOrders: 0,
+        buyerCompanyName: "David",
+      ),
+    ];
+
+    // Create a demo product variant.
+    final demoProductVariant = ProductVariantModel(
+      id: 1,
+      variantName: "Demo Variant",
+      price: 100.0,
+      sku: "DEMO-SKU",
+      units: "pcs",
+      createdDate: DateTime.now(),
+      updatedDate: DateTime.now(),
+      imageUrls: [
+        ProductVariantImageModel(
+          id: 1,
+          imageUrl: "https://via.placeholder.com/150",
+        ),
+      ],
+      inventories: [],
+    );
+
+    // Create a demo cart item.
+    final demoCartItem = CartItemEntity(
+      id: 1,
+      price: 100.0,
+      quantity: 2,
+      totalPrice: 200.0,
+      productVariant: demoProductVariant,
+    );
+
+    // Create demo carts.
+    final demoCarts = [
+      CartEntity(
+        id: 1,
+        userId: widget.userId,
+        status: "ACTIVE",
+        createdAt: DateTime.now(),
+        updatedAt: DateTime.now(),
+        items: [demoCartItem],
+      ),
+    ];
+
+    setState(() {
+      _customers = demoCustomers;
+      _carts = demoCarts;
+      if (_customers.isNotEmpty) selectedCustomer = _customers.first;
+      if (_carts.isNotEmpty) selectedCart = _carts.first;
+    });
   }
 
   /// Helper function to calculate the total amount from the selected cart.
   double _calculateTotalSum(CartEntity cart) {
     double sum = 0;
-    // Assuming CartEntity has a list field named `items`
-    // and each item has nullable fields: price (double?) and quantity (int?).
     for (var item in cart.items) {
       double price = item.price ?? 0.0;
       int quantity = item.quantity ?? 0;
@@ -106,7 +166,10 @@ class _DealCreatePageState extends State<DealCreatePage> {
     final newDeal = DealEntity(
       customerId: selectedCustomer!,
       cartId: selectedCart!,
-      userId: User(id: widget.userId, username: "", email: ""),
+      userId: User(
+          id: widget.userId,
+          username: "Demo Salesman",
+          email: "salesman@example.com"),
       dealName: _dealNameController.text,
       dealStage: _dealStageController.text,
       amount: amount,
@@ -114,7 +177,7 @@ class _DealCreatePageState extends State<DealCreatePage> {
       deliveryAddress: _deliveryAddressController.text,
       expectedCloseDate: DateTime.tryParse(_expectedCloseDateController.text) ??
           DateTime.now(),
-      actualClosedDate: null, // Kept as null.
+      actualClosedDate: null,
       note: _noteController.text,
     );
 
@@ -156,7 +219,7 @@ class _DealCreatePageState extends State<DealCreatePage> {
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
-        child: _customers.isEmpty || _carts.isEmpty
+        child: (_customers.isEmpty || _carts.isEmpty)
             ? const Center(child: CircularProgressIndicator())
             : Form(
                 key: _formKey,
@@ -207,7 +270,7 @@ class _DealCreatePageState extends State<DealCreatePage> {
                           value == null ? "Please select a cart" : null,
                     ),
                     const SizedBox(height: 16),
-                    // Deal Name Field
+                    // Deal Name Field.
                     TextFormField(
                       controller: _dealNameController,
                       decoration: const InputDecoration(
@@ -219,7 +282,7 @@ class _DealCreatePageState extends State<DealCreatePage> {
                           : null,
                     ),
                     const SizedBox(height: 16),
-                    // Deal Stage Field
+                    // Deal Stage Field.
                     TextFormField(
                       controller: _dealStageController,
                       decoration: const InputDecoration(
@@ -231,7 +294,7 @@ class _DealCreatePageState extends State<DealCreatePage> {
                           : null,
                     ),
                     const SizedBox(height: 16),
-                    // Delivery Address Field
+                    // Delivery Address Field.
                     TextFormField(
                       controller: _deliveryAddressController,
                       decoration: const InputDecoration(
@@ -243,7 +306,7 @@ class _DealCreatePageState extends State<DealCreatePage> {
                           : null,
                     ),
                     const SizedBox(height: 16),
-                    // Expected Close Date Field
+                    // Expected Close Date Field.
                     TextFormField(
                       controller: _expectedCloseDateController,
                       decoration: const InputDecoration(
@@ -255,7 +318,7 @@ class _DealCreatePageState extends State<DealCreatePage> {
                           : null,
                     ),
                     const SizedBox(height: 16),
-                    // Note Field
+                    // Note Field.
                     TextFormField(
                       controller: _noteController,
                       decoration: const InputDecoration(
@@ -263,6 +326,23 @@ class _DealCreatePageState extends State<DealCreatePage> {
                         border: OutlineInputBorder(),
                       ),
                       maxLines: 3,
+                    ),
+                    const SizedBox(height: 16),
+                    // New Field: Current Location Map View.
+                    const Text(
+                      "Current Location",
+                      style:
+                          TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(height: 8),
+                    // Replace the MapSample widget with our HimathnagarMap.
+                    Container(
+                      height: 200,
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.grey),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: const HimathnagarMap(),
                     ),
                     const SizedBox(height: 24),
                     _isSubmitting

@@ -16,13 +16,13 @@ class CreateCartEvent extends CartEvent {
 
 class AddItemToCartEvent extends CartEvent {
   final int cartId;
-  final int productId;
+  final int variantId; // Updated from productId to variantId.
   final int quantity;
 
-  AddItemToCartEvent(this.cartId, this.productId, this.quantity);
+  AddItemToCartEvent(this.cartId, this.variantId, this.quantity);
 
   @override
-  List<Object?> get props => [cartId, productId, quantity];
+  List<Object?> get props => [cartId, variantId, quantity];
 }
 
 class RemoveItemFromCartEvent extends CartEvent {
@@ -36,8 +36,8 @@ class RemoveItemFromCartEvent extends CartEvent {
 }
 
 class UpdateCartItemEvent extends CartEvent {
-  final int userId; // Changed from String to int for consistency
-  final int cartItemId; // Changed from String to int for consistency
+  final int userId;
+  final int cartItemId;
   final int quantity;
 
   UpdateCartItemEvent(this.userId, this.cartItemId, this.quantity);
@@ -66,7 +66,7 @@ class GetCartItemsEvent extends CartEvent {
 
 class RemoveCartEvent extends CartEvent {
   final int cartId;
-  final int userId; // Added to refresh the list after deletion
+  final int userId;
 
   RemoveCartEvent({required this.cartId, required this.userId});
 

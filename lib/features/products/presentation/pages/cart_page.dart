@@ -25,19 +25,22 @@ class _UserCartsPageState extends State<UserCartsPage> {
 
   Future<void> _loadUserAndFetchCarts() async {
     final user = await SecureStorageHelper.getUserData();
+    if (!mounted) return;
     if (user != null) {
       setState(() {
         userId = user.id;
       });
-      // Log the user id loaded from storage.
       debugPrint('Loaded user id: ${user.id}');
-      context.read<CartBloc>().add(GetCartsByUserIdEvent(user.id));
+      context.read<DemoCartBloc>().add(GetCartsByUserIdEvent(user.id));
+    } else {
+      debugPrint('No user data found.');
+      // Optionally, handle the case when user data is missing (e.g., navigate to login)
     }
   }
 
   void _refreshCarts() {
     if (userId != null) {
-      context.read<CartBloc>().add(GetCartsByUserIdEvent(userId!));
+      context.read<DemoCartBloc>().add(GetCartsByUserIdEvent(userId!));
     }
   }
 
@@ -58,11 +61,10 @@ class _UserCartsPageState extends State<UserCartsPage> {
             ),
             TextButton(
               onPressed: () {
-                // Log the event before dismissing the dialog.
                 debugPrint(
                     'Dispatching RemoveCartEvent for cartId: $cartId, userId: $userId');
                 Navigator.pop(context);
-                context.read<CartBloc>().add(
+                context.read<DemoCartBloc>().add(
                       RemoveCartEvent(cartId: cartId, userId: userId!),
                     );
               },
@@ -76,11 +78,10 @@ class _UserCartsPageState extends State<UserCartsPage> {
 
   void _createCart() {
     if (userId != null) {
-      context.read<CartBloc>().add(CreateCartEvent(userId!));
-
-      // Optionally wait a short period before refreshing carts.
+      context.read<DemoCartBloc>().add(CreateCartEvent(userId!));
+      // Refresh the carts after a brief delay.
       Future.delayed(const Duration(seconds: 1), () {
-        context.read<CartBloc>().add(GetCartsByUserIdEvent(userId!));
+        context.read<DemoCartBloc>().add(GetCartsByUserIdEvent(userId!));
       });
     }
   }
@@ -96,7 +97,10 @@ class _UserCartsPageState extends State<UserCartsPage> {
         backgroundColor: primaryColor,
         title: const Text(
           'Your Carts',
-          style: TextStyle(fontWeight: FontWeight.bold,    color: Colors.white,),
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
         ),
         centerTitle: true,
         actions: [
@@ -109,11 +113,12 @@ class _UserCartsPageState extends State<UserCartsPage> {
       body: SafeArea(
         child: userId == null
             ? const Center(child: CircularProgressIndicator())
-            : BlocBuilder<CartBloc, CartState>(
+            : BlocBuilder<DemoCartBloc, CartState>(
                 builder: (context, state) {
                   if (state is CartLoading) {
                     return const Center(child: CircularProgressIndicator());
-                  } else if (state is CartListSuccess) {
+                  } else if (state is CartsLoadSuccess) {
+                    debugPrint("CartsLoadSuccess: ${state.carts}");
                     final carts = state.carts;
                     if (carts.isEmpty) {
                       return const Center(
@@ -130,8 +135,7 @@ class _UserCartsPageState extends State<UserCartsPage> {
                         itemCount: carts.length,
                         itemBuilder: (context, index) {
                           final cart = carts[index];
-                          final itemCount = cart.items.length ?? 0;
-
+                          final itemCount = cart.items?.length ?? 0;
                           return Card(
                             margin: const EdgeInsets.only(bottom: 16),
                             elevation: 4,
@@ -144,8 +148,8 @@ class _UserCartsPageState extends State<UserCartsPage> {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    settings:
-                                        RouteSettings(name: '/cart/detail'),
+                                    settings: const RouteSettings(
+                                        name: '/cart/detail'),
                                     builder: (_) => MainLayout(
                                       child: CartDetailsPage(cart: cart),
                                     ),
@@ -196,10 +200,10 @@ class _UserCartsPageState extends State<UserCartsPage> {
                                                 child: Text(
                                                   '$itemCount item${itemCount != 1 ? 's' : ''}',
                                                   style: const TextStyle(
-                                                      fontSize: 14,
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                      color: Colors.green),
+                                                    fontSize: 14,
+                                                    fontWeight: FontWeight.bold,
+                                                    color: Colors.green,
+                                                  ),
                                                 ),
                                               ),
                                               const SizedBox(width: 10),
@@ -209,10 +213,10 @@ class _UserCartsPageState extends State<UserCartsPage> {
                                                 label: Text(
                                                   cart.status,
                                                   style: const TextStyle(
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                      fontSize: 12,
-                                                      color: Colors.blue),
+                                                    fontWeight: FontWeight.bold,
+                                                    fontSize: 12,
+                                                    color: Colors.blue,
+                                                  ),
                                                 ),
                                               ),
                                             ],
@@ -248,6 +252,7 @@ class _UserCartsPageState extends State<UserCartsPage> {
                       ),
                     );
                   } else if (state is CartError) {
+                    debugPrint("CartError: ${state.message}");
                     return Center(
                       child: Text(
                         'Error: ${state.message}',
@@ -255,6 +260,7 @@ class _UserCartsPageState extends State<UserCartsPage> {
                       ),
                     );
                   } else {
+                    debugPrint("No data found in state: $state");
                     return const Center(
                       child: Text(
                         'No data found.',

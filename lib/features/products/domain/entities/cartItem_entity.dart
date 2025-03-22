@@ -1,55 +1,51 @@
 import 'package:equatable/equatable.dart';
-import 'package:pura_crm/features/products/data/models/product_model.dart';
+import 'package:pura_crm/features/products/domain/entities/product_variant.dart';
 
 class CartItemEntity extends Equatable {
   final int id;
-  final ProductModel product;
+  final ProductVariant productVariant;
   final int quantity;
   final double price;
   final double totalPrice;
 
   const CartItemEntity({
     required this.id,
-    required this.product,
+    required this.productVariant,
     required this.quantity,
     required this.price,
     required this.totalPrice,
   });
 
-  // fromJson method to deserialize the JSON data
   factory CartItemEntity.fromJson(Map<String, dynamic> json) {
     return CartItemEntity(
       id: json['id'] ?? 0,
-      product: ProductModel.fromJson(
-          json['product'] ?? {}), // Deserialize product properly
+      productVariant: ProductVariant.fromJson(json['productVariant'] ?? {}),
       quantity: json['quantity'] ?? 0,
       price: (json['price'] as num?)?.toDouble() ?? 0.0,
       totalPrice: (json['totalPrice'] as num?)?.toDouble() ?? 0.0,
     );
   }
 
-  // toJson method to serialize the CartItemEntity to JSON
   Map<String, dynamic> toJson() {
     return {
       'id': id,
-      'product': product.toJson(), // Serialize product properly
+      'productVariant': productVariant.toJson(),
       'quantity': quantity,
       'price': price,
       'totalPrice': totalPrice,
     };
   }
 
-  // copyWith method to modify immutable properties
   CartItemEntity copyWith({
     int? id,
-    ProductModel? product,
+    ProductVariant? productVariant,
     int? quantity,
     double? price,
     double? totalPrice,
   }) {
     return CartItemEntity(
       id: id ?? this.id,
-      product: product ?? this.product, // Copying product correctly
+      productVariant: productVariant ?? this.productVariant,
       quantity: quantity ?? this.quantity,
       price: price ?? this.price,
       totalPrice: totalPrice ?? this.totalPrice,
@@ -57,5 +53,5 @@ class CartItemEntity extends Equatable {
   }
 
   @override
-  List<Object?> get props => [id, product, quantity, price, totalPrice];
+  List<Object?> get props => [id, productVariant, quantity, price, totalPrice];
 }
