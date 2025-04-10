@@ -243,29 +243,31 @@ class MyApp extends StatelessWidget {
         return MaterialPageRoute(
           builder: (_) => MainLayout(child: DealCustomerCreatePage()),
         );
-      case '/deal/product/add':
-        return MaterialPageRoute(
-          builder: (context) {
-            // Safely extract the customer from the arguments.
-            final customer =
-                ModalRoute.of(context)!.settings.arguments as Customer?;
-            if (customer == null) {
-              // Display an error message or redirect as needed.
-              return Scaffold(
-                appBar: AppBar(title: const Text('Error')),
-                body: const Center(child: Text('No customer was provided')),
-              );
-            }
-            return MainLayout(
-              child: DealProductAddPage(
-                customer: customer,
-                getAllProductsUseCase: GetIt.I<GetAllProductsUseCase>(),
-                createCartUseCase: GetIt.I<CreateCartUseCase>(),
-                addItemToCartUseCase: GetIt.I<AddItemToCartUseCase>(),
-              ),
-            );
-          },
+case '/deal/product/add':
+  return MaterialPageRoute(
+    settings: settings, // <-- Ensure settings are passed here
+    builder: (context) {
+      // Safely extract the customer from the arguments.
+      final customer =
+          ModalRoute.of(context)!.settings.arguments as Customer?;
+
+      if (customer == null) {
+        // Display an error message if no customer was provided.
+        return Scaffold(
+          appBar: AppBar(title: const Text('Error')),
+          body: const Center(child: Text('No customer was provided')),
         );
+      }
+      return MainLayout(
+        child: DealProductAddPage(
+          customer: customer,
+          getAllProductsUseCase: GetIt.I<GetAllProductsUseCase>(),
+          createCartUseCase: GetIt.I<CreateCartUseCase>(),
+          addItemToCartUseCase: GetIt.I<AddItemToCartUseCase>(),
+        ),
+      );
+    },
+  );
       case '/maps':
         return MaterialPageRoute(builder: (_) => MapSample());
       default:

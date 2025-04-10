@@ -127,6 +127,7 @@ class _DealCustomerCreatePageState extends State<DealCustomerCreatePage> {
       }
     }
     if (customerToUse != null) {
+
       Navigator.pushNamed(
         context,
         '/deal/product/add',

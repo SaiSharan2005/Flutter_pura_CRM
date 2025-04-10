@@ -4,6 +4,7 @@ import 'package:pura_crm/features/products/domain/entities/product_entity.dart';
 import 'package:pura_crm/features/products/domain/usecases/cart_usecase.dart';
 import 'package:pura_crm/features/products/domain/usecases/get_all_products_usecase.dart';
 import 'package:pura_crm/features/customer/domain/entities/customer_entity.dart';
+import 'package:pura_crm/features/products/presentation/widgets/product_card_view.dart';
 
 class DealProductAddPage extends StatefulWidget {
   final Customer customer;
@@ -31,7 +32,6 @@ class _DealProductAddPageState extends State<DealProductAddPage> {
   String _errorMessage = '';
   final TextEditingController _searchController = TextEditingController();
 
-  // Primary color.
   final Color primaryColor = const Color(0xFFE41B47);
 
   @override
@@ -84,21 +84,18 @@ class _DealProductAddPageState extends State<DealProductAddPage> {
     });
   }
 
-  // When a product is tapped, add its first variant (if available) to the cart.
   void _handleAddItem(Product product) async {
     if (_cart == null) return;
     if (product.variants.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-            content: Text('No variants available for this product.')),
+        const SnackBar(content: Text('No variants available for this product.')),
       );
       return;
     }
     final variantId = product.variants.first.id;
     if (variantId == null) return;
     try {
-      final updatedCart =
-          await widget.addItemToCartUseCase.call(_cart!.id, variantId, 1);
+      final updatedCart = await widget.addItemToCartUseCase.call(_cart!.id, variantId, 1);
       setState(() {
         _cart = updatedCart;
       });
@@ -118,64 +115,6 @@ class _DealProductAddPageState extends State<DealProductAddPage> {
     }
   }
 
-  Widget _buildProductCard(Product product) {
-    String? imageUrl;
-    if (product.variants.isNotEmpty &&
-        product.variants.first.imageUrls.isNotEmpty) {
-      imageUrl = product.variants.first.imageUrls.first.imageUrl;
-    }
-    // Price (from first variant, if any)
-    String priceText = product.variants.isNotEmpty
-        ? '\$${product.variants.first.price.toStringAsFixed(2)}'
-        : 'N/A';
-
-    return GestureDetector(
-      onTap: () => _handleAddItem(product),
-      child: Card(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
-        elevation: 2,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            if (imageUrl != null && imageUrl.isNotEmpty)
-              Expanded(
-                flex: 2,
-                child: ClipRRect(
-                  borderRadius:
-                      const BorderRadius.vertical(top: Radius.circular(8.0)),
-                  child: Image.network(
-                    imageUrl,
-                    fit: BoxFit.cover,
-                    width: double.infinity,
-                  ),
-                ),
-              ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    product.productName,
-                    style: const TextStyle(
-                        fontSize: 14, fontWeight: FontWeight.bold),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    priceText,
-                    style: const TextStyle(color: Colors.green, fontSize: 12),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -186,7 +125,6 @@ class _DealProductAddPageState extends State<DealProductAddPage> {
       body: SafeArea(
         child: Column(
           children: [
-            // Search bar.
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: TextField(
@@ -204,20 +142,16 @@ class _DealProductAddPageState extends State<DealProductAddPage> {
             if (_errorMessage.isNotEmpty)
               Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: Text(
-                  _errorMessage,
-                  style: const TextStyle(color: Colors.red),
-                ),
+                child: Text(_errorMessage, style: const TextStyle(color: Colors.red)),
               ),
-            // Product Grid.
             Expanded(
               child: _isLoading
                   ? const Center(child: CircularProgressIndicator())
-                  : _filteredProducts.isNotEmpty
-                      ? GridView.builder(
+                  : _filteredProducts.isEmpty
+                      ? const Center(child: Text('No products found!'))
+                      : GridView.builder(
                           padding: const EdgeInsets.all(8.0),
-                          gridDelegate:
-                              const SliverGridDelegateWithFixedCrossAxisCount(
+                          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                             crossAxisCount: 2,
                             crossAxisSpacing: 8,
                             mainAxisSpacing: 8,
@@ -226,10 +160,12 @@ class _DealProductAddPageState extends State<DealProductAddPage> {
                           itemCount: _filteredProducts.length,
                           itemBuilder: (context, index) {
                             final product = _filteredProducts[index];
-                            return _buildProductCard(product);
+                            return ProductCardView(
+                              product: product,
+                              onTap: (_) => _handleAddItem(product), // Only this line is different from AllProductsPage
+                            );
                           },
-                        )
-                      : const Center(child: Text('No products found!')),
+                        ),
             ),
           ],
         ),
@@ -246,10 +182,7 @@ class _DealProductAddPageState extends State<DealProductAddPage> {
           ),
           onPressed: _goToCartView,
           icon: const Icon(Icons.shopping_cart, color: Colors.white),
-          label: const Text(
-            'Go To Cart',
-            style: TextStyle(color: Colors.white, fontSize: 16),
-          ),
+          label: const Text('Go To Cart', style: TextStyle(color: Colors.white, fontSize: 16)),
         ),
       ),
     );
