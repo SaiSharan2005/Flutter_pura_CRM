@@ -43,14 +43,13 @@ import 'package:pura_crm/features/salesman/domain/repositories/salesman_reposito
 final getIt = GetIt.instance;
 
 Future<void> setupInjection() async {
-  // Base URL for API
   final String apiBaseUrl = 'http://localhost:8000/api';
 
-  // Register ApiClient as a singleton
+  // Register ApiClient as a singleton.
   getIt.registerLazySingleton<ApiClient>(
       () => ApiClient(apiBaseUrl, http.Client()));
 
-  // Register DataSources
+  // Register DataSources.
   getIt.registerLazySingleton<RemoteDataSource>(
       () => RemoteDataSource(getIt<ApiClient>()));
   getIt.registerLazySingleton<CustomerRemoteDataSource>(
@@ -58,7 +57,7 @@ Future<void> setupInjection() async {
   getIt.registerLazySingleton<DealRemoteDataSourceImpl>(
       () => DealRemoteDataSourceImpl(apiClient: getIt<ApiClient>()));
 
-  // Register Repositories
+  // Register Repositories.
   getIt.registerLazySingleton<SalesmanRepository>(
       () => SalesmanRepositoryImpl(getIt<ApiClient>()));
   getIt.registerLazySingleton<ManagerRepository>(
@@ -72,16 +71,16 @@ Future<void> setupInjection() async {
   getIt.registerLazySingleton<DealRepositoryImpl>(() =>
       DealRepositoryImpl(remoteDataSource: getIt<DealRemoteDataSourceImpl>()));
 
-  // Register the CustomerRepository using the interface.
+  // Register CustomerRepository using its interface.
   getIt.registerLazySingleton<CustomerRepository>(() => CustomerRepositoryImpl(
       remoteDataSource: getIt<CustomerRemoteDataSource>()));
 
-  // Register UseCases
-  // Customer UseCases
+  // Register UseCases.
+  // Customer UseCases.
   getIt.registerLazySingleton(
       () => GetAllCustomers(getIt<CustomerRepository>()));
 
-  // Deals UseCases
+  // Deals UseCases.
   getIt.registerLazySingleton(
       () => CreateDealUseCase(getIt<DealRepositoryImpl>()));
   getIt.registerLazySingleton(
@@ -93,7 +92,7 @@ Future<void> setupInjection() async {
   getIt.registerLazySingleton(
       () => DeleteDealUseCase(getIt<DealRepositoryImpl>()));
 
-  // Cart UseCases
+  // Cart UseCases.
   getIt.registerLazySingleton(() => CreateCartUseCase(getIt<CartRepository>()));
   getIt.registerLazySingleton(
       () => AddItemToCartUseCase(getIt<CartRepository>()));
@@ -107,7 +106,7 @@ Future<void> setupInjection() async {
       () => GetCartItemsUseCase(getIt<CartRepository>()));
   getIt.registerLazySingleton(() => RemoveCartUseCase(getIt<CartRepository>()));
 
-  // Product UseCases
+  // Product UseCases.
   getIt.registerLazySingleton(
       () => CreateProductUseCase(getIt<ProductRepository>()));
   getIt.registerLazySingleton(
@@ -115,7 +114,7 @@ Future<void> setupInjection() async {
   getIt.registerLazySingleton(
       () => GetProductByIdUseCase(getIt<ProductRepository>()));
 
-  // Variant UseCases (if needed)
+  // Variant UseCases (if needed).
   // getIt.registerLazySingleton(() => AddVariantUseCase(getIt<ProductVariantRepository>()));
   // getIt.registerLazySingleton(() => UpdateVariantUseCase(getIt<ProductVariantRepository>()));
   // getIt.registerLazySingleton(() => DeleteVariantUseCase(getIt<ProductVariantRepository>()));

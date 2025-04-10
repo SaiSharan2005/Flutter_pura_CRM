@@ -8,10 +8,14 @@ import 'package:pura_crm/features/auth/presentation/pages/login_page.dart';
 import 'package:pura_crm/features/auth/presentation/pages/logistic_person_page.dart';
 import 'package:pura_crm/features/auth/presentation/pages/manager_page.dart';
 import 'package:pura_crm/features/auth/presentation/pages/register_page.dart';
+import 'package:pura_crm/features/customer/domain/entities/customer_entity.dart';
 import 'package:pura_crm/features/customer/presentation/pages/deal_customer_create_page.dart';
 import 'package:pura_crm/features/deals/domain/entities/deal_entity.dart';
+import 'package:pura_crm/features/products/domain/usecases/cart_usecase.dart';
+import 'package:pura_crm/features/products/domain/usecases/get_all_products_usecase.dart';
 import 'package:pura_crm/features/products/presentation/pages/all_product_page.dart';
 import 'package:pura_crm/features/products/presentation/pages/cart_page.dart';
+import 'package:pura_crm/features/products/presentation/pages/deal_product_add_page.dart';
 import 'package:pura_crm/features/products/presentation/pages/product_create_page.dart';
 import 'package:pura_crm/features/salesman/presentation/pages/craete_salesman_page.dart';
 import 'package:pura_crm/features/salesman/presentation/pages/manager_home.dart';
@@ -239,7 +243,29 @@ class MyApp extends StatelessWidget {
         return MaterialPageRoute(
           builder: (_) => MainLayout(child: DealCustomerCreatePage()),
         );
-
+      case '/deal/product/add':
+        return MaterialPageRoute(
+          builder: (context) {
+            // Safely extract the customer from the arguments.
+            final customer =
+                ModalRoute.of(context)!.settings.arguments as Customer?;
+            if (customer == null) {
+              // Display an error message or redirect as needed.
+              return Scaffold(
+                appBar: AppBar(title: const Text('Error')),
+                body: const Center(child: Text('No customer was provided')),
+              );
+            }
+            return MainLayout(
+              child: DealProductAddPage(
+                customer: customer,
+                getAllProductsUseCase: GetIt.I<GetAllProductsUseCase>(),
+                createCartUseCase: GetIt.I<CreateCartUseCase>(),
+                addItemToCartUseCase: GetIt.I<AddItemToCartUseCase>(),
+              ),
+            );
+          },
+        );
       case '/maps':
         return MaterialPageRoute(builder: (_) => MapSample());
       default:

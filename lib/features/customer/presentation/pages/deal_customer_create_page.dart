@@ -165,8 +165,7 @@ class _DealCustomerCreatePageState extends State<DealCustomerCreatePage> {
             leading: Icon(Icons.person, color: primaryColor),
             title: Text(
               customer.customerName,
-              style:
-                  const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
             ),
           ),
           const Divider(height: 1),
@@ -251,7 +250,7 @@ class _DealCustomerCreatePageState extends State<DealCustomerCreatePage> {
                 ),
               ),
             ),
-            // Expanded scrollable area.
+            // Wrap content in a scrollable area.
             Expanded(
               child: SingleChildScrollView(
                 child: AnimatedSwitcher(
