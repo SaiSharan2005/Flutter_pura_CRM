@@ -14,6 +14,7 @@ import 'package:pura_crm/features/auth/domain/repositories/logistic_repository.d
 // Customer
 import 'package:pura_crm/features/customer/data/datasources/customer_remote_data_source.dart';
 import 'package:pura_crm/features/customer/data/repositories/customer_repository_impl.dart';
+import 'package:pura_crm/features/customer/domain/repositories/customer_repository.dart';
 import 'package:pura_crm/features/customer/domain/usecases/get_all_customers.dart';
 
 // Deals
@@ -43,7 +44,7 @@ final getIt = GetIt.instance;
 
 Future<void> setupInjection() async {
   // Base URL for API
-  final String apiBaseUrl = 'https://massive-susi-s-a-i-3e201788.koyeb.app/api';
+  final String apiBaseUrl = 'http://localhost:8000/api';
 
   // Register ApiClient as a singleton
   getIt.registerLazySingleton<ApiClient>(
@@ -70,14 +71,15 @@ Future<void> setupInjection() async {
       () => CartRepositoryImpl(getIt<ApiClient>()));
   getIt.registerLazySingleton<DealRepositoryImpl>(() =>
       DealRepositoryImpl(remoteDataSource: getIt<DealRemoteDataSourceImpl>()));
-  getIt.registerLazySingleton<CustomerRepositoryImpl>(() =>
-      CustomerRepositoryImpl(
-          remoteDataSource: getIt<CustomerRemoteDataSource>()));
+
+  // Register the CustomerRepository using the interface.
+  getIt.registerLazySingleton<CustomerRepository>(() => CustomerRepositoryImpl(
+      remoteDataSource: getIt<CustomerRemoteDataSource>()));
 
   // Register UseCases
   // Customer UseCases
   getIt.registerLazySingleton(
-      () => GetAllCustomers(getIt<CustomerRepositoryImpl>()));
+      () => GetAllCustomers(getIt<CustomerRepository>()));
 
   // Deals UseCases
   getIt.registerLazySingleton(

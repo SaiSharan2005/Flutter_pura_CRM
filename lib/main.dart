@@ -8,6 +8,7 @@ import 'package:pura_crm/features/auth/presentation/pages/login_page.dart';
 import 'package:pura_crm/features/auth/presentation/pages/logistic_person_page.dart';
 import 'package:pura_crm/features/auth/presentation/pages/manager_page.dart';
 import 'package:pura_crm/features/auth/presentation/pages/register_page.dart';
+import 'package:pura_crm/features/customer/presentation/pages/deal_customer_create_page.dart';
 import 'package:pura_crm/features/deals/domain/entities/deal_entity.dart';
 import 'package:pura_crm/features/products/presentation/pages/all_product_page.dart';
 import 'package:pura_crm/features/products/presentation/pages/cart_page.dart';
@@ -37,8 +38,8 @@ import 'package:pura_crm/utils/dynamic_navbar.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  await SecureStorageHelper.saveToken(
-      "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJzYWxlc21hbiIsInVzZXJJZCI6MiwiYXV0aG9yaXRpZXMiOlt7ImF1dGhvcml0eSI6IlNBTEVTTUFOIn1dLCJpYXQiOjE3NDEwODUyNDgsImV4cCI6MTc0MzY3NzI0OH0.gp1x8iUYo3ptBdr6xuBtaecjuRL6LRItFgPyFSxQiAU");
+  // await SecureStorageHelper.saveToken(
+  //     "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJzYWxlc21hbiIsInVzZXJJZCI6MiwiYXV0aG9yaXRpZXMiOlt7ImF1dGhvcml0eSI6IlNBTEVTTUFOIn1dLCJpYXQiOjE3NDEwODUyNDgsImV4cCI6MTc0MzY3NzI0OH0.gp1x8iUYo3ptBdr6xuBtaecjuRL6LRItFgPyFSxQiAU");
   await setupInjection(); // Initialize dependencies via GetIt
   runApp(MyApp());
 }
@@ -46,7 +47,8 @@ void main() async {
 class MyApp extends StatelessWidget {
   MyApp({super.key});
 
-  final String apiBaseUrl = 'https://massive-susi-s-a-i-3e201788.koyeb.app/api';
+  // final String apiBaseUrl = 'https://massive-susi-s-a-i-3e201788.koyeb.app/api';
+  final String apiBaseUrl = 'http://localhost:8000/api';
 
   @override
   Widget build(BuildContext context) {
@@ -233,6 +235,11 @@ class MyApp extends StatelessWidget {
             },
           ),
         );
+      case '/deal/customer/create':
+        return MaterialPageRoute(
+          builder: (_) => MainLayout(child: DealCustomerCreatePage()),
+        );
+
       case '/maps':
         return MaterialPageRoute(builder: (_) => MapSample());
       default:
