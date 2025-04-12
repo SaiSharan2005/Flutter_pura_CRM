@@ -7,7 +7,7 @@ class AddDealFAB extends StatelessWidget {
   Widget build(BuildContext context) {
     return FloatingActionButton(
       onPressed: () {
-        Navigator.of(context, rootNavigator: true).pushNamed('/deals/create');
+        Navigator.of(context, rootNavigator: true).pushNamed('/deal/customer/create');
       },
       backgroundColor: const Color(0xFFE41B47), // Primary Color
       elevation: 6.0, // Shadow effect

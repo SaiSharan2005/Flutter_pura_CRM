@@ -14,6 +14,7 @@ import 'package:pura_crm/features/deals/domain/entities/deal_entity.dart';
 import 'package:pura_crm/features/products/domain/usecases/cart_usecase.dart';
 import 'package:pura_crm/features/products/domain/usecases/get_all_products_usecase.dart';
 import 'package:pura_crm/features/products/presentation/pages/all_product_page.dart';
+import 'package:pura_crm/features/products/presentation/pages/cart_detail.dart';
 import 'package:pura_crm/features/products/presentation/pages/cart_page.dart';
 import 'package:pura_crm/features/products/presentation/pages/deal_product_add_page.dart';
 import 'package:pura_crm/features/products/presentation/pages/product_create_page.dart';
@@ -38,6 +39,7 @@ import 'package:pura_crm/features/auth/presentation/state/salesman_provider.dart
 import 'package:pura_crm/injection_container.dart';
 // Import the dynamic navbar from your utils folder.
 import 'package:pura_crm/utils/dynamic_navbar.dart';
+import 'package:pura_crm/utils/test.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -50,8 +52,7 @@ void main() async {
 
 class MyApp extends StatelessWidget {
   MyApp({super.key});
-
-  // final String apiBaseUrl = 'https://massive-susi-s-a-i-3e201788.koyeb.app/api';
+//  final String apiBaseUrl = 'https://massive-susi-s-a-i-3e201788.koyeb.app/api';
   final String apiBaseUrl = 'http://localhost:8000/api';
 
   @override
@@ -64,14 +65,14 @@ class MyApp extends StatelessWidget {
         ),
         // Provide CartBloc (with necessary use cases)
         BlocProvider(
-          create: (_) => DemoCartBloc(
-            // createCartUseCase: GetIt.instance(),
-            // addItemToCartUseCase: GetIt.instance(),
-            // removeItemFromCartUseCase: GetIt.instance(),
-            // updateCartItemUseCase: GetIt.instance(),
+          create: (_) => CartBloc(
+            createCartUseCase: GetIt.instance(),
+            addItemToCartUseCase: GetIt.instance(),
+            removeItemFromCartUseCase: GetIt.instance(),
+            updateCartItemUseCase: GetIt.instance(),
             getCartsByUserIdUseCase: GetIt.instance(),
-            // getCartItemsUseCase: GetIt.instance(),
-            // removeCartUseCase: GetIt.instance(),
+            getCartItemsUseCase: GetIt.instance(),
+            removeCartUseCase: GetIt.instance(),
           ),
         ),
         // Provide DealBloc
@@ -109,6 +110,19 @@ class MyApp extends StatelessWidget {
               productId: productId,
               getProductByIdUseCase: GetIt.instance(),
             ),
+          ),
+        );
+      }
+    }
+      if (uri.pathSegments.length == 3 &&
+        uri.pathSegments[0] == 'cart' &&
+        uri.pathSegments[1] == 'detail') {
+      final id = int.tryParse(uri.pathSegments[2]);
+      if (id != null) {
+        return MaterialPageRoute(
+          settings: settings,
+          builder: (context) => MainLayout(
+            child: CartDetailsPage(cartId: id),
           ),
         );
       }
@@ -209,7 +223,7 @@ class MyApp extends StatelessWidget {
               if (snapshot.hasData && snapshot.data != null) {
                 return UserDealsPage(
                   userId: snapshot.data!.id,
-                  // getDealsOfUserUseCase: GetIt.instance(),
+                  getDealsOfUserUseCase: GetIt.instance(),
                 );
               }
               return const Scaffold(
@@ -270,6 +284,8 @@ case '/deal/product/add':
   );
       case '/maps':
         return MaterialPageRoute(builder: (_) => MapSample());
+      case '/test':
+        return MaterialPageRoute(builder: (_) => SecureStorageDisplayPage());
       default:
         return MaterialPageRoute(builder: (_) => MainLayout(child: HomePage()));
     }

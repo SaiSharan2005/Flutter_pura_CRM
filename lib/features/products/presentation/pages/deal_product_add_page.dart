@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pura_crm/core/utils/secure_storage_helper.dart';
 import 'package:pura_crm/features/products/domain/entities/cart_entity.dart';
 import 'package:pura_crm/features/products/domain/entities/product_entity.dart';
 import 'package:pura_crm/features/products/domain/usecases/cart_usecase.dart';
@@ -31,7 +32,6 @@ class _DealProductAddPageState extends State<DealProductAddPage> {
   bool _isLoading = true;
   String _errorMessage = '';
   final TextEditingController _searchController = TextEditingController();
-
   final Color primaryColor = const Color(0xFFE41B47);
 
   @override
@@ -85,8 +85,7 @@ class _DealProductAddPageState extends State<DealProductAddPage> {
   }
 
   void _handleAddItem(Product product) async {
-    if (_cart == null) return;
-    if (product.variants.isEmpty) {
+    if (_cart == null || product.variants.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('No variants available for this product.')),
       );
@@ -109,11 +108,13 @@ class _DealProductAddPageState extends State<DealProductAddPage> {
     }
   }
 
-  void _goToCartView() {
-    if (_cart != null) {
-      Navigator.pushNamed(context, '/deal/cart/view', arguments: _cart);
-    }
+void _goToCartView() async {
+  if (_cart != null) {
+    await SecureStorageHelper.saveSelectedCart(_cart!.toJson());
+
+    Navigator.pushNamed(context, '/cart/detail/${_cart!.id}', arguments: _cart);
   }
+}
 
   @override
   Widget build(BuildContext context) {
@@ -142,7 +143,10 @@ class _DealProductAddPageState extends State<DealProductAddPage> {
             if (_errorMessage.isNotEmpty)
               Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: Text(_errorMessage, style: const TextStyle(color: Colors.red)),
+                child: Text(
+                  _errorMessage,
+                  style: const TextStyle(color: Colors.red),
+                ),
               ),
             Expanded(
               child: _isLoading
@@ -160,9 +164,15 @@ class _DealProductAddPageState extends State<DealProductAddPage> {
                           itemCount: _filteredProducts.length,
                           itemBuilder: (context, index) {
                             final product = _filteredProducts[index];
+                            final productId = product.id;
+
                             return ProductCardView(
                               product: product,
-                              onTap: (_) => _handleAddItem(product), // Only this line is different from AllProductsPage
+                              onTap: (productId) {
+                                final product = productId.id;
+                                  Navigator.pushNamed(
+                                      context, '/product/$product');
+                                },
                             );
                           },
                         ),

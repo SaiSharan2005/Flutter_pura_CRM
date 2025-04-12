@@ -44,6 +44,7 @@ final getIt = GetIt.instance;
 
 Future<void> setupInjection() async {
   final String apiBaseUrl = 'http://localhost:8000/api';
+  // final String apiBaseUrl = 'https://massive-susi-s-a-i-3e201788.koyeb.app/api';
 
   // Register ApiClient as a singleton.
   getIt.registerLazySingleton<ApiClient>(

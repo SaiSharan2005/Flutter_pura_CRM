@@ -124,6 +124,22 @@ class CartRepositoryImpl implements CartRepository {
       throw Exception('Error fetching cart items: $error');
     }
   }
+@override
+Future<CartEntity> getCartById(int cartId) async {
+  try {
+    final response = await apiClient.get('/cart/$cartId');
+    if (response.statusCode == 200) {
+      // Assuming the endpoint returns a JSON object representing a single cart.
+      final data = jsonDecode(response.body);
+      final cartModel = CartModel.fromJson(data);
+      return cartModel.toEntity();
+    } else {
+      throw Exception('Failed to fetch cart: ${response.statusCode}');
+    }
+  } catch (error) {
+    throw Exception('Error fetching cart: $error');
+  }
+}
 
   @override
   Future<void> deleteCart(int cartId) async {

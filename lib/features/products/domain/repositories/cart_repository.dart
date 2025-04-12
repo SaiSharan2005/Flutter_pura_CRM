@@ -8,5 +8,6 @@ abstract class CartRepository {
   Future<CartEntity> updateCartItem(int userId, int cartItemId, int quantity);
   Future<List<CartEntity>> getCartsByUserId(int userId);
   Future<List<CartItemEntity>> getCartItems(int userId);
+Future<CartEntity> getCartById(int cartId);
   Future<void> deleteCart(int cartId);
 }

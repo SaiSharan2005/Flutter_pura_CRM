@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:pura_crm/core/utils/secure_storage_helper.dart'; // Import the secure storage helper.
 import 'package:pura_crm/features/customer/domain/entities/customer_entity.dart';
 import 'package:pura_crm/features/customer/domain/usecases/get_all_customers.dart';
 import 'package:pura_crm/features/customer/domain/usecases/create_customer.dart';
@@ -127,6 +128,9 @@ class _DealCustomerCreatePageState extends State<DealCustomerCreatePage> {
       }
     }
     if (customerToUse != null) {
+      // Save the selected/created customer details into secure storage.
+      // Assumes that the Customer model has a toJson() method.
+      await SecureStorageHelper.saveSelectedCustomer(customerToUse.toJson());
 
       Navigator.pushNamed(
         context,
@@ -218,8 +222,7 @@ class _DealCustomerCreatePageState extends State<DealCustomerCreatePage> {
               ),
               elevation: 3,
               child: Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 child: Row(
                   children: [
                     Expanded(

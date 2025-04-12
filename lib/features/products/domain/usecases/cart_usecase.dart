@@ -74,3 +74,12 @@ class RemoveCartUseCase {
     await repository.deleteCart(cartId);
   }
 }
+class GetCartByIdUseCase {
+  final CartRepository repository;
+
+  GetCartByIdUseCase(this.repository);
+
+  Future<CartEntity> call(int cartId) async {
+    return await repository.getCartById(cartId);
+  }
+}

@@ -41,7 +41,7 @@ class _OrderSectionState extends State<OrderSection> {
 
     // Dispatch event to add item to cart.
     // Your CartBloc should then update its state with the latest cart and items.
-    context.read<DemoCartBloc>().add(
+    context.read<CartBloc>().add(
           AddItemToCartEvent(widget.cartId, widget.variantId, quantity),
         );
 
